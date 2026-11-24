@@ -1,4 +1,10 @@
 <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../service-worker.js').catch(() => {});
+    });
+  }
+
   (() => {
     const closed = localStorage.getItem('adminSidebarClosed') === '1';
     document.documentElement.classList.toggle('admin-sidebar-closed', closed);

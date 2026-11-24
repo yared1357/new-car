@@ -13,6 +13,13 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
   <meta name="description" content="<?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="theme-color" content="<?= htmlspecialchars($siteSettings['primary_color'], ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="<?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>">
+  <link rel="manifest" href="manifest.php">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
   <!-- Tailwind CSS (via CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -72,6 +79,14 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     .header-phone-icon {
       animation: phone-ring 2.2s ease-in-out infinite;
       transform-origin: 50% 50%;
+    }
+
+    @keyframes refresh-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #header-refresh-button.refreshing svg {
+      animation: refresh-spin 0.7s linear infinite;
     }
 
     @keyframes contact-glow {
@@ -452,7 +467,15 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <?php if ($siteSettings['tagline'] !== ''): ?><small class="text-xs font-normal normal-case"><?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
         </span>
       </a>
-      <div class="flex items-center">
+      <div class="flex items-center gap-2">
+        <button type="button" id="header-refresh-button"
+          aria-label="Refresh page" title="Refresh for new content"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white text-slate-700 shadow-md transition hover:border-primary hover:text-primary active:scale-95">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 6v5h-5M4 18v-5h5M6.5 9A7 7 0 0118 6.5L20 11M4 13l2 4.5A7 7 0 0017.5 15" />
+          </svg>
+        </button>
         <?php if ($siteSettings['contact_phone'] !== ''): ?>
           <a href="tel:<?= htmlspecialchars(preg_replace('/[^0-9+]/', '', $siteSettings['contact_phone']), ENT_QUOTES, 'UTF-8') ?>"
             aria-label="Call <?= htmlspecialchars($siteSettings['contact_phone'], ENT_QUOTES, 'UTF-8') ?>"
@@ -1088,6 +1111,14 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     </svg>
   </button>
 
+  <button type="button" id="pwa-install-button" hidden
+    class="fixed bottom-5 left-4 z-[71] items-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-xl transition hover:bg-slate-800 sm:left-6">
+    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l5-5m-5 5l-5-5M5 21h14" />
+    </svg>
+    <span>Install App</span>
+  </button>
+
   <!-- ===== FOOTER ===== -->
   <footer class="border-t border-white/10 py-10 text-white" style="background-color: <?= htmlspecialchars($siteSettings['footer_color'], ENT_QUOTES, 'UTF-8') ?>">
     <div class="mx-auto max-w-98vw px-6 text-center lg:max-w-80vw">
@@ -1383,6 +1414,49 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !document.getElementById('image-modal').classList.contains('hidden')) closeModal();
     });
+  </script>
+
+  <script>
+    const headerRefreshButton = document.getElementById('header-refresh-button');
+    headerRefreshButton?.addEventListener('click', () => {
+      headerRefreshButton.classList.add('refreshing');
+      headerRefreshButton.disabled = true;
+
+      const refreshUrl = new URL(window.location.href);
+      refreshUrl.searchParams.set('_refresh', Date.now().toString());
+
+      window.location.replace(refreshUrl.toString());
+    });
+
+    let pwaInstallPrompt = null;
+    const pwaInstallButton = document.getElementById('pwa-install-button');
+
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      pwaInstallPrompt = event;
+      if (pwaInstallButton) {
+        pwaInstallButton.hidden = false;
+        pwaInstallButton.classList.add('flex');
+      }
+    });
+
+    pwaInstallButton?.addEventListener('click', async () => {
+      if (!pwaInstallPrompt) return;
+      pwaInstallPrompt.prompt();
+      await pwaInstallPrompt.userChoice;
+      pwaInstallPrompt = null;
+      pwaInstallButton.hidden = true;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      if (pwaInstallButton) pwaInstallButton.hidden = true;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
   </script>
 
 </body>

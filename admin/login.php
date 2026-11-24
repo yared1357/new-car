@@ -14,6 +14,9 @@ $siteSettings = get_site_settings($pdo);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Login | <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?></title>
+  <meta name="theme-color" content="#1E40AF">
+  <link rel="manifest" href="../manifest.php">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -88,6 +91,12 @@ $siteSettings = get_site_settings($pdo);
   </div>
 
   <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../service-worker.js').catch(() => {});
+      });
+    }
+
     function togglePassword() {
       const passwordField = document.getElementById('password');
       const eyeOn = document.getElementById('eye-on');

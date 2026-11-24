@@ -6,7 +6,9 @@
   }
 
   (() => {
-    const closed = localStorage.getItem('adminSidebarClosed') === '1';
+    const desktop = window.matchMedia('(min-width: 1024px)').matches;
+    const closed = !desktop && localStorage.getItem('adminSidebarClosed') === '1';
+    if (desktop) localStorage.setItem('adminSidebarClosed', '0');
     document.documentElement.classList.toggle('admin-sidebar-closed', closed);
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -15,39 +17,68 @@
       const menuButton = document.getElementById('menu-btn');
       const closeButton = document.getElementById('sidebar-close-btn');
       const overlay = document.getElementById('overlay');
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main-content');
+      const headerLeft = document.getElementById('header-left');
+      let desktopMode = window.matchMedia('(min-width: 1024px)').matches;
 
-      const setClosed = (value) => {
-        document.documentElement.classList.toggle('admin-sidebar-closed', value);
-        if (window.innerWidth >= 1024) {
-          localStorage.setItem('adminSidebarClosed', value ? '1' : '0');
+      menuButton?.addEventListener('click', event => {
+        if (window.innerWidth < 1024) {
+          const opening = sidebar.classList.contains('-translate-x-full');
+          sidebar.classList.toggle('-translate-x-full', !opening);
+          overlay?.classList.toggle('hidden', !opening);
+          document.documentElement.classList.toggle('admin-sidebar-closed', !opening);
+          event.stopImmediatePropagation();
         }
+      }, true);
+      closeButton?.addEventListener('click', event => {
+        if (window.innerWidth < 1024) {
+          sidebar.classList.add('-translate-x-full');
+          overlay?.classList.add('hidden');
+          document.documentElement.classList.add('admin-sidebar-closed');
+          event.stopImmediatePropagation();
+        }
+      }, true);
+      overlay?.addEventListener('click', event => {
+        if (window.innerWidth < 1024) {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+          document.documentElement.classList.add('admin-sidebar-closed');
+          event.stopImmediatePropagation();
+        }
+      }, true);
+
+      const syncBreakpointLayout = () => {
+        const nowDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        if (nowDesktop === desktopMode) return;
+        desktopMode = nowDesktop;
+
+        requestAnimationFrame(() => {
+          const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+          sidebar.classList.toggle('-translate-x-full', !isDesktop);
+          document.documentElement.classList.toggle('admin-sidebar-closed', !isDesktop);
+          overlay?.classList.add('hidden');
+          if (main) {
+            main.style.marginLeft = isDesktop ? '256px' : '';
+            main.style.width = isDesktop ? 'calc(100% - 256px)' : '';
+          }
+          if (headerLeft) headerLeft.style.marginLeft = isDesktop ? '258px' : '0';
+          if (isDesktop) localStorage.setItem('adminSidebarClosed', '0');
+        });
       };
-
-      menuButton?.addEventListener('click', () => {
-        if (window.innerWidth >= 1024) {
-          setClosed(!document.documentElement.classList.contains('admin-sidebar-closed'));
-        }
-      }, true);
-      closeButton?.addEventListener('click', () => {
-        if (window.innerWidth >= 1024) setClosed(true);
-        else document.documentElement.classList.remove('admin-sidebar-closed');
-      }, true);
-      overlay?.addEventListener('click', () => {
-        if (window.innerWidth >= 1024) setClosed(true);
-        else document.documentElement.classList.remove('admin-sidebar-closed');
-      }, true);
+      window.addEventListener('resize', syncBreakpointLayout);
+      syncBreakpointLayout();
     });
   })();
 </script>
 <style>
   @media (min-width: 1024px) {
-    html:not(.admin-sidebar-closed) #sidebar {
-      transform: translateX(0) !important;
+    #menu-btn {
+      display: none !important;
     }
-  }
-  @media (min-width: 1024px) {
-    html.admin-sidebar-closed #sidebar {
-      transform: translateX(-100%) !important;
+
+    #sidebar {
+      transform: translateX(0) !important;
     }
   }
   html:not(.admin-layout-ready) #sidebar,

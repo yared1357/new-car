@@ -4,6 +4,7 @@ require_once __DIR__ . '/session.php';
 // === STATISTICS ===
 $total_cars = $pdo->query("SELECT COUNT(*) FROM cars")->fetchColumn();
 $featured_cars = $pdo->query("SELECT COUNT(*) FROM cars WHERE featured = 1")->fetchColumn();
+$total_admins = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")->fetchColumn();
 $total_messages = $pdo->query("SELECT COUNT(*) FROM contact_messages")->fetchColumn();
 $unread_messages = $pdo->query("SELECT COUNT(*) FROM contact_messages WHERE is_read = 0")->fetchColumn();
 $total_slides = $pdo->query("SELECT COUNT(*) FROM hero_images")->fetchColumn();
@@ -49,25 +50,13 @@ foreach ($stmt->fetchAll() as $row) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     .stat-card {
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     .stat-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .stat-card::after {
-      content: '';
-      position: absolute;
-      width: 9rem;
-      height: 9rem;
-      right: -4.5rem;
-      bottom: -5.5rem;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
     }
 
     /* Responsive Chart Height */
@@ -129,7 +118,7 @@ foreach ($stmt->fetchAll() as $row) {
             class="text-primary font-extrabold text-sm sm:text-base lg:text-2xl xl:text-3xl whitespace-nowrap tracking-tight uppercase"><?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?></span>
         </a>
       </div>
-      <div class="pr-4 text-gray-900">
+      <div class="pr-2 text-gray-900">
         <div class="relative">
           <button id="profile-btn" class="p-2 rounded-full hover:bg-gray-100 transition">
             <div
@@ -138,44 +127,47 @@ foreach ($stmt->fetchAll() as $row) {
             </div>
           </button>
           <div id="profile-menu"
-            class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 hidden z-50 overflow-hidden">
-            <div class="p-5 bg-gradient-to-br from-primary to-blue-700 text-white">
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-16 h-16 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-3xl font-bold">
-                  <?php echo strtoupper(substr($displayName, 0, 1)); ?>
-                </div>
-                <div>
-                  <p class="font-bold text-lg">
-                    <?php echo htmlspecialchars($displayName); ?>
-                  </p>
-                  <p class="text-sm opacity-90">
-                    <?php echo htmlspecialchars($admin['email']); ?>
-                  </p>
-                  <?php if (!empty($admin['phone'])): ?>
-                    <p class="text-sm opacity-90 mt-1">Phone:
-                      <?php echo htmlspecialchars($admin['phone']); ?>
-                    </p>
-                  <?php endif; ?>
-                </div>
+            class="absolute right-0 z-50 mt-3 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white text-gray-900 shadow-2xl"
+            style="width: min(20rem, calc(100vw - 1rem)); max-width: calc(100vw - 1rem);">
+            <div class="bg-slate-50 px-6 py-7 text-center">
+              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-white ring-4 ring-blue-100">
+                <?php echo htmlspecialchars(strtoupper(substr($displayName, 0, 1))); ?>
               </div>
+              <p class="mt-3 break-words text-lg font-bold text-slate-900">
+                <?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?>
+              </p>
+              <p class="mt-1 break-all text-sm text-slate-500">
+                <?= htmlspecialchars($admin['email'] ?: 'No email address', ENT_QUOTES, 'UTF-8') ?>
+              </p>
+              <?php if (!empty($admin['phone'])): ?>
+                <p class="mt-1 text-sm text-slate-500">Phone: <?= htmlspecialchars($admin['phone'], ENT_QUOTES, 'UTF-8') ?></p>
+              <?php endif; ?>
+              <span class="mt-3 inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-800">
+                <?= $admin['role'] === 'super_admin' ? 'Super admin' : 'Admin' ?>
+              </span>
             </div>
-            <div class="p-2">
+            <div class="space-y-2 p-4">
               <a href="change_password.php"
-                class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-lg transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 Change Password
               </a>
               <?php if ($admin['role'] === 'super_admin'): ?>
-                <a href="settings.php" class="block rounded-lg px-4 py-3 transition hover:bg-gray-100">Site settings</a>
+                <a href="settings.php"
+                  class="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15.5A3.5 3.5 0 1012 8a3.5 3.5 0 000 7.5zm0-13v2m0 15v2m10-9.5h-2m-16 0H2m17-7l-1.5 1.5M6.5 17.5L5 19m14 0l-1.5-1.5M6.5 6.5L5 5"/>
+                  </svg>
+                  Site settings
+                </a>
               <?php endif; ?>
-              <form action="logout.php" method="POST" class="mt-1">
+              <form action="logout.php" method="POST" data-confirm-title="Log out?" data-confirm-message="Are you sure you want to log out of the admin panel?" data-confirm-button="Log out">
                 <button
-                  class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition border-none bg-transparent cursor-pointer">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
@@ -210,82 +202,33 @@ foreach ($stmt->fetchAll() as $row) {
         </p>
       </div>
 
-      <!-- STAT CARDS - TWO IN ONE ROW ON MOBILE, FOUR ON LARGE -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8 md:mb-12">
-        <!-- Total Cars - Clickable -->
-        <a href="cars.php"
-          class="stat-card block rounded-2xl border border-blue-400/20 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 p-4 text-white shadow-lg shadow-blue-900/10 transition md:p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs font-medium text-blue-100 md:text-sm">Total Cars</p>
-              <p class="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl"><?= $total_cars ?></p>
-              <p class="mt-2 hidden text-xs text-blue-100 md:block">View inventory</p>
-            </div>
-            <svg class="w-10 h-10 md:w-16 md:h-16 text-blue-200 opacity-50" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M3 13.5C3 12.12 4.12 11 5.5 11H18.5C19.88 11 21 12.12 21 13.5V15c0 .55-.45 1-1 1h-1.1a2 2 0 01-3.8 0H9.9a2 2 0 01-3.8 0H5c-.55 0-1-.45-1-1v-1.5zM5.5 11l1.5-3.5A2 2 0 009 6h6a2 2 0 012 1.5L19 11" />
-              <circle cx="7.5" cy="17" r="1" fill="currentColor" />
-              <circle cx="16.5" cy="17" r="1" fill="currentColor" />
-            </svg>
-          </div>
+      <!-- Dashboard statistics -->
+      <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5 md:mb-12 md:gap-5">
+        <a href="cars.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Total Cars</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_cars ?></p>
+          <p class="mt-2 text-xs text-slate-400">View inventory</p>
         </a>
-
-        <!-- Featured Cars -->
-        <div
-          class="stat-card rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-700 p-4 text-white shadow-lg shadow-emerald-900/10 md:p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs font-medium text-emerald-50 md:text-sm">Featured Cars</p>
-              <p class="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl"><?= $featured_cars ?></p>
-              <p class="mt-2 hidden text-xs text-emerald-50 md:block">Spotlight vehicles</p>
-            </div>
-            <svg class="w-10 h-10 md:w-16 md:h-16 text-green-200 opacity-50" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
-          </div>
+        <a href="cars.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Featured Cars</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $featured_cars ?></p>
+          <p class="mt-2 text-xs text-slate-400">Spotlight vehicles</p>
+        </a>
+        <a href="hero_images.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Hero Slides</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_slides ?></p>
+          <p class="mt-2 text-xs text-slate-400">Homepage banners</p>
+        </a>
+        <a href="messages.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Messages</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_messages ?></p>
+          <p class="mt-2 text-xs text-slate-400"><?= (int) $unread_messages ?> unread</p>
+        </a>
+        <div class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Admin Accounts</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_admins ?></p>
+          <p class="mt-2 text-xs text-slate-400">Administrator users</p>
         </div>
-
-        <!-- Slides (Hero Images) - Clickable -->
-        <a href="hero_images.php"
-          class="stat-card block rounded-2xl border border-amber-300/30 bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 p-4 text-slate-950 shadow-lg shadow-amber-900/10 md:p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs font-medium text-amber-950/70 md:text-sm">Hero Slides</p>
-              <p class="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl"><?= $total_slides ?></p>
-              <p class="mt-2 hidden text-xs text-amber-950/70 md:block">Homepage banners</p>
-            </div>
-            <svg class="w-10 h-10 md:w-16 md:h-16 text-yellow-200 opacity-60" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16v12H4zM10 20h4" />
-            </svg>
-          </div>
-        </a>
-
-        <!-- Messages - Clickable -->
-        <a href="messages.php"
-          class="stat-card block rounded-2xl border border-violet-400/20 bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-700 p-4 text-white shadow-lg shadow-violet-900/10 md:p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs font-medium text-violet-100 md:text-sm">Messages</p>
-              <p class="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl"><?= $total_messages ?></p>
-              <?php if ($unread_messages > 0): ?>
-                <p
-                  class="text-[10px] md:text-sm mt-1 md:mt-2 bg-red-500 px-2 md:px-4 py-0.5 md:py-1 rounded-full inline-block font-bold">
-                  <?= $unread_messages ?>
-                  Unread
-                </p>
-              <?php endif; ?>
-            </div>
-            <svg class="w-10 h-10 md:w-16 md:h-16 text-purple-200 opacity-50" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </div>
-        </a>
       </div>
 
       <!-- CHART + MESSAGES -->

@@ -18,7 +18,9 @@
 
       const setClosed = (value) => {
         document.documentElement.classList.toggle('admin-sidebar-closed', value);
-        localStorage.setItem('adminSidebarClosed', value ? '1' : '0');
+        if (window.innerWidth >= 1024) {
+          localStorage.setItem('adminSidebarClosed', value ? '1' : '0');
+        }
       };
 
       menuButton?.addEventListener('click', () => {
@@ -26,8 +28,14 @@
           setClosed(!document.documentElement.classList.contains('admin-sidebar-closed'));
         }
       }, true);
-      closeButton?.addEventListener('click', () => setClosed(true), true);
-      overlay?.addEventListener('click', () => setClosed(true), true);
+      closeButton?.addEventListener('click', () => {
+        if (window.innerWidth >= 1024) setClosed(true);
+        else document.documentElement.classList.remove('admin-sidebar-closed');
+      }, true);
+      overlay?.addEventListener('click', () => {
+        if (window.innerWidth >= 1024) setClosed(true);
+        else document.documentElement.classList.remove('admin-sidebar-closed');
+      }, true);
     });
   })();
 </script>
@@ -37,8 +45,10 @@
       transform: translateX(0) !important;
     }
   }
-  html.admin-sidebar-closed #sidebar {
-    transform: translateX(-100%) !important;
+  @media (min-width: 1024px) {
+    html.admin-sidebar-closed #sidebar {
+      transform: translateX(-100%) !important;
+    }
   }
   html:not(.admin-layout-ready) #sidebar,
   html:not(.admin-layout-ready) #main-content,

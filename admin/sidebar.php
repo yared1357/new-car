@@ -58,6 +58,14 @@ $navItems = [
 
       <?php if ($admin['role'] === 'super_admin'): ?>
         <li>
+          <a href="admin_accounts.php" class="<?= $activeSidebar === 'admins'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
+            <svg class="h-6 w-6 <?= $activeSidebar === 'admins' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2m7-10a4 4 0 100-8 4 4 0 000 8zm13 10v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Manage Admins
+          </a>
+        </li>
+        <li>
           <a href="settings.php" class="<?= $activeSidebar === 'settings'
             ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">

@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($new !== $confirm) {
         $error = "New passwords do not match.";
-    } elseif (strlen($new) < 6) {
-        $error = "New password must be at least 6 characters.";
+    } elseif (strlen($new) < 4) {
+        $error = "New password must be at least 4 characters.";
     } else {
         $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['admin_id']]);
@@ -20,9 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($current, $user['password'])) {
             $hashed = password_hash($new, PASSWORD_DEFAULT);
-            $update = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+            $update = $pdo->prepare("UPDATE users SET password = ?, force_password_change = 0 WHERE id = ?");
             $update->execute([$hashed, $_SESSION['admin_id']]);
             $message = "Password changed successfully!";
+            if (isset($_GET['forced'])) {
+                header('Location: dashboard.php');
+                exit;
+            }
         } else {
             $error = "Current password is incorrect.";
         }

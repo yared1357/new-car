@@ -9,7 +9,7 @@ if (empty($_SESSION['admin_id'])) {
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT id, name, email, phone, role FROM users WHERE id = ? AND role IN ('admin', 'super_admin')");
+$stmt = $pdo->prepare("SELECT id, name, email, phone, role, force_password_change FROM users WHERE id = ? AND role IN ('admin', 'super_admin')");
 $stmt->execute([$_SESSION['admin_id']]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -18,6 +18,14 @@ if (!$admin) {
     session_destroy();
     header('Location: login.php');
     exit;
+}
+
+if ((int) ($admin['force_password_change'] ?? 0) === 1) {
+    $currentPage = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    if ($currentPage !== 'change_password.php') {
+        header('Location: change_password.php?forced=1');
+        exit;
+    }
 }
 
 $displayName = !empty($admin['name'])

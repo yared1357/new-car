@@ -24,6 +24,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  if (!['http:', 'https:'].includes(new URL(event.request.url).protocol)) return;
 
   event.respondWith(
     fetch(event.request)

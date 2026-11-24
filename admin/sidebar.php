@@ -66,6 +66,14 @@ $navItems = [
           </a>
         </li>
         <li>
+          <a href="admin_password_reset.php" class="<?= $activeSidebar === 'password_reset'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
+            <svg class="h-6 w-6 <?= $activeSidebar === 'password_reset' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 11V8a5 5 0 0110 0v3m-11 0h12v10H6V11zm6 4v2"/></svg>
+            Reset Password
+          </a>
+        </li>
+        <li>
           <a href="settings.php" class="<?= $activeSidebar === 'settings'
             ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
@@ -100,7 +108,7 @@ $navItems = [
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6zm9.5 3a3 3 0 100-6 3 3 0 000 6z"/></svg>
       View Site
     </a>
-    <form action="logout.php" method="POST">
+    <form action="logout.php" method="POST" data-confirm-title="Log out?" data-confirm-message="Are you sure you want to log out of the admin panel?" data-confirm-button="Log out">
       <button type="submit"
         class="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 py-3.5 text-base font-bold text-slate-100 transition hover:border-red-400/40 hover:bg-red-500/10">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m18 7V5"/></svg>
@@ -109,3 +117,66 @@ $navItems = [
     </form>
   </div>
 </aside>
+
+<dialog id="admin-confirm-dialog" class="w-[calc(100%-2rem)] max-w-md rounded-2xl border-0 bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-950/60">
+  <div class="p-6 sm:p-7">
+    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v4m0 4h.01M10.3 3.9L2.8 17a2 2 0 001.7 3h15a2 2 0 001.7-3l-7.5-13.1a2 2 0 00-3.4 0z"/></svg>
+    </div>
+    <h2 id="admin-confirm-title" class="text-xl font-bold">Are you sure?</h2>
+    <p id="admin-confirm-message" class="mt-2 text-sm leading-6 text-slate-600"></p>
+    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <button type="button" id="admin-confirm-cancel" class="rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</button>
+      <button type="button" id="admin-confirm-accept" class="rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">Confirm</button>
+    </div>
+  </div>
+</dialog>
+<script>
+  (() => {
+    const dialog = document.getElementById('admin-confirm-dialog');
+    const title = document.getElementById('admin-confirm-title');
+    const message = document.getElementById('admin-confirm-message');
+    const accept = document.getElementById('admin-confirm-accept');
+    const cancel = document.getElementById('admin-confirm-cancel');
+    let pendingForm = null;
+    let approvedForm = null;
+
+    document.addEventListener('submit', event => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement) || !form.hasAttribute('data-confirm-title')) return;
+      if (form === approvedForm) {
+        approvedForm = null;
+        return;
+      }
+
+      event.preventDefault();
+      pendingForm = form;
+      title.textContent = form.dataset.confirmTitle || 'Are you sure?';
+      message.textContent = form.dataset.confirmMessage || 'Please confirm that you want to continue.';
+      accept.textContent = form.dataset.confirmButton || 'Confirm';
+      const danger = form.dataset.confirmStyle !== 'primary';
+      accept.className = danger
+        ? 'rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200'
+        : 'rounded-lg bg-primary px-4 py-2.5 font-bold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200';
+      dialog.showModal();
+      accept.focus();
+    });
+
+    const closeDialog = () => {
+      pendingForm = null;
+      dialog.close();
+    };
+    cancel.addEventListener('click', closeDialog);
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) closeDialog();
+    });
+    accept.addEventListener('click', () => {
+      if (!pendingForm) return;
+      const form = pendingForm;
+      pendingForm = null;
+      approvedForm = form;
+      dialog.close();
+      form.requestSubmit();
+    });
+  })();
+</script>

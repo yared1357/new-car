@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             else if ($form['phone'] === '' || !preg_match('/^[0-9+()\-\\s]{6,20}$/', $form['phone'])) $error = 'Enter a valid phone number.';
             else if ($form['email'] !== '' && (!filter_var($form['email'], FILTER_VALIDATE_EMAIL) || mb_strlen($form['email']) > 100)) $error = 'Enter a valid email address.';
             else if ($action === 'create' && mb_strlen($passwordValue) < 4) $error = 'Password must be at least 4 characters.';
-            else if ($action === 'edit' && $passwordValue !== '' && mb_strlen($passwordValue) < 4) $error = 'New password must be at least 4 characters.';
             else {
                 $checkSql = 'SELECT id FROM users WHERE phone=?';
                 $checkParams = [$form['phone']];
@@ -52,13 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($check->fetch()) $error = 'This phone number is already registered.';
                 else if ($action === 'edit') {
                     if ($accountId <= 0) $error = 'Invalid account.';
-                    else if ($passwordValue !== '') {
-                        $passwordColumn = 'password';
-                        $sql = "UPDATE users SET username=?, " . $passwordColumn . "=?, role=?, email=?, name=?, phone=?, force_password_change=0 WHERE id=?";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute([$form['phone'], password_hash($passwordValue, PASSWORD_DEFAULT), $form['role'], $form['email'], $form['name'], $form['phone'], $accountId]);
-                        header('Location: admin_accounts.php?saved=1'); exit;
-                    } else {
+                    else {
                         $stmt = $pdo->prepare("UPDATE users SET username=?, role=?, email=?, name=?, phone=? WHERE id=?");
                         $stmt->execute([$form['phone'], $form['role'], $form['email'], $form['name'], $form['phone'], $accountId]);
                         header('Location: admin_accounts.php?saved=1'); exit;
@@ -123,7 +116,9 @@ $accounts = $pdo->query("SELECT id,role,email,name,phone,created_at FROM users W
         <label class="text-sm font-semibold">Phone number<input type="tel" name="phone" required maxlength="20" value="<?= htmlspecialchars($form['phone']) ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="+251..."></label>
         <label class="text-sm font-semibold">Email <span class="font-normal text-slate-400">(optional)</span><input type="email" name="email" maxlength="100" value="<?= htmlspecialchars($form['email']) ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="admin@example.com"></label>
         <label class="text-sm font-semibold">Role<select name="role" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5"><option value="admin" <?= $form['role']==='admin'?'selected':'' ?>>Admin</option><option value="super_admin" <?= $form['role']==='super_admin'?'selected':'' ?>>Super admin</option></select></label>
-        <label class="text-sm font-semibold sm:col-span-2"><?= $editAccount?'New password (optional)':'Password' ?><input type="password" name="password" minlength="4" <?= $editAccount?'':'required' ?> class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="At least 4 characters"></label>
+        <?php if (!$editAccount): ?>
+          <label class="text-sm font-semibold sm:col-span-2">Password<input type="password" name="password" minlength="4" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="At least 4 characters"></label>
+        <?php endif; ?>
       </div>
       <div class="mt-5 flex gap-3"><button type="submit" class="rounded-lg bg-primary px-5 py-2.5 font-bold text-white"><?= $editAccount?'Update account':'Create account' ?></button><a href="admin_accounts.php" id="cancel-account-form" class="rounded-lg border border-slate-300 px-5 py-2.5 font-semibold">Cancel</a></div>
     </form>
@@ -178,12 +173,6 @@ $accounts = $pdo->query("SELECT id,role,email,name,phone,created_at FROM users W
     accountForm.querySelector('[name="phone"]').value = '';
     accountForm.querySelector('[name="email"]').value = '';
     accountForm.querySelector('[name="role"]').value = 'admin';
-    accountForm.querySelector('[name="password"]').value = '';
-    accountForm.querySelector('[name="password"]').required = true;
-
-    const passwordLabel = accountForm.querySelector('[name="password"]').closest('label');
-    if (passwordLabel) passwordLabel.childNodes[0].textContent = 'Password';
-
     const submitButton = accountForm.querySelector('button[type="submit"]');
     submitButton.textContent = 'Create account';
 

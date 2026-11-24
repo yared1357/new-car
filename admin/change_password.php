@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="relative">
                         <label class="block text-sm font-medium mb-2">New Password</label>
-                        <input type="password" name="new_password" required minlength="6"
+                        <input type="password" name="new_password" required minlength="4"
                             class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary pr-12">
                         <button type="button" class="toggle-pass absolute right-3 top-10 text-gray-500">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="relative">
                         <label class="block text-sm font-medium mb-2">Confirm New Password</label>
-                        <input type="password" name="confirm_password" required minlength="6"
+                        <input type="password" name="confirm_password" required minlength="4"
                             class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary pr-12">
                         <button type="button" class="toggle-pass absolute right-3 top-10 text-gray-500">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

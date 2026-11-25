@@ -80,6 +80,15 @@
     #sidebar {
       transform: translateX(0) !important;
     }
+
+    #main-content {
+      margin-left: 256px !important;
+      width: calc(100% - 256px) !important;
+    }
+
+    #header-left {
+      margin-left: 258px !important;
+    }
   }
   html:not(.admin-layout-ready) #sidebar,
   html:not(.admin-layout-ready) #main-content,

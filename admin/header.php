@@ -113,15 +113,15 @@
       </a>
     </div>
 
-    <div class="pr-3 text-slate-900">
+    <div class="text-slate-900">
       <div class="relative">
-        <button id="profile-btn" class="rounded-full p-1 transition" aria-label="Open profile menu">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-md">
+        <button id="profile-btn" class="rounded-full transition" aria-label="Open profile menu">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#0f2a3d] text-sm font-bold text-white shadow-md">
             <?= htmlspecialchars(strtoupper(substr($displayName, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
           </span>
         </button>
         <div id="profile-menu" class="absolute right-0 mt-2 hidden w-72 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl z-50">
-          <div class="bg-gradient-to-br from-primary to-blue-700 p-5 text-white">
+          <div class="bg-[#0f2a3d] p-5 text-center text-white">
             <p class="font-bold text-base"><?= htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8') ?></p>
             <?php if (!empty($admin['email'])): ?>
               <p class="text-xs opacity-90"><?= htmlspecialchars($admin['email'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -132,12 +132,8 @@
             <p class="mt-1 text-xs font-semibold uppercase tracking-wide"><?= $admin['role'] === 'super_admin' ? 'Super admin' : 'Admin' ?></p>
           </div>
           <div class="p-2">
-            <a href="change_password.php" class="block rounded-lg px-4 py-3 text-sm transition hover:bg-slate-100">Change Password</a>
-            <?php if ($admin['role'] === 'super_admin'): ?>
-              <a href="settings.php" class="block rounded-lg px-4 py-3 text-sm transition hover:bg-slate-100">Site settings</a>
-            <?php endif; ?>
-            <form action="logout.php" method="POST" class="mt-1">
-              <button type="submit" class="w-full rounded-lg px-4 py-3 text-left text-sm text-red-600 transition hover:bg-red-50">Logout</button>
+            <form action="logout.php" method="POST" class="mt-1" data-confirm-title="Log out?" data-confirm-message="Are you sure you want to log out of the admin panel?" data-confirm-button="Log out">
+              <button type="submit" class="w-full rounded-lg px-4 py-3 text-center text-sm font-semibold text-red-600 transition hover:bg-red-50">Logout</button>
             </form>
           </div>
         </div>

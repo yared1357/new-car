@@ -120,9 +120,9 @@ $navItems = [
     </div>
     <h2 id="admin-confirm-title" class="text-xl font-bold">Are you sure?</h2>
     <p id="admin-confirm-message" class="mt-2 text-sm leading-6 text-slate-600"></p>
-    <div class="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
-      <button type="button" id="admin-confirm-cancel" class="min-w-28 rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</button>
-      <button type="button" id="admin-confirm-accept" class="min-w-28 rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">Confirm</button>
+    <div class="mt-6 flex w-full flex-row justify-center gap-2 sm:gap-3">
+      <button type="button" id="admin-confirm-cancel" class="w-1/2 max-w-36 rounded-lg border border-slate-300 px-3 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</button>
+      <button type="button" id="admin-confirm-accept" class="w-1/2 max-w-36 rounded-lg bg-red-600 px-3 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">Confirm</button>
     </div>
   </div>
 </dialog>

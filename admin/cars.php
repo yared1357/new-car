@@ -505,7 +505,7 @@ function format_etb($val)
             <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><?= htmlspecialchars($error) ?></div>
           <?php endif; ?>
 
-          <form method="POST" enctype="multipart/form-data" class="space-y-4">
+          <form id="add-car-form" method="POST" enctype="multipart/form-data" class="space-y-4">
             <div class="grid md:grid-cols-3 gap-4">
               <div>
                 <label for="make" class="block text-sm font-medium mb-1">Brand</label>
@@ -520,7 +520,7 @@ function format_etb($val)
               <div>
                 <label for="year" class="block text-sm font-medium mb-1">Year</label>
                 <input type="number" id="year" name="year" required placeholder="Year" min="1980" max="2030"
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                  class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
               </div>
             </div>
 
@@ -554,7 +554,7 @@ function format_etb($val)
               <div>
                 <label for="mileage" class="block text-sm font-medium mb-1">Mileage (km)</label>
                 <input type="number" id="mileage" name="mileage" required placeholder="Mileage (km)"
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                  class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
               </div>
               <div>
                 <label for="fuel_type" class="block text-sm font-medium mb-1">Fuel Type</label>
@@ -651,7 +651,7 @@ function format_etb($val)
                   <label for="edit-year" class="block text-sm font-medium mb-1">Year</label>
                   <input type="number" id="edit-year" name="year" required placeholder="Year" min="1980" max="2030"
                     value="<?= $editCar['year'] ?>"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
               </div>
 
@@ -689,7 +689,7 @@ function format_etb($val)
                   <label for="edit-mileage" class="block text-sm font-medium mb-1">Mileage (km)</label>
                   <input type="number" id="edit-mileage" name="mileage" required placeholder="Mileage (km)"
                     value="<?= $editCar['mileage'] ?>"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 <div>
                   <label for="edit-fuel_type" class="block text-sm font-medium mb-1">Fuel Type</label>
@@ -868,7 +868,27 @@ function format_etb($val)
     const closeAddModal = document.getElementById('close-add-modal');
     const cancelAdd = document.getElementById('cancel-add');
 
-    function openAddModal() { addModal.classList.add('open'); }
+    function resetAddForm() {
+      const form = document.getElementById('add-car-form');
+      if (!form) return;
+
+      form.reset();
+      ['price', 'old_price', 'discount_percentage'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = '';
+      });
+
+      const preview = document.getElementById('old-price-preview');
+      if (preview) {
+        preview.innerHTML = '';
+        preview.classList.add('hidden');
+      }
+    }
+
+    function openAddModal() {
+      resetAddForm();
+      addModal.classList.add('open');
+    }
 
     function confirmAndCloseAddModal() {
       // Ask for confirmation before closing the create form
@@ -883,6 +903,7 @@ function format_etb($val)
       }).then(result => {
         if (result.isConfirmed) {
           addModal.classList.remove('open');
+          resetAddForm();
         }
       });
     }
@@ -950,9 +971,16 @@ function format_etb($val)
         if (updating) return;
         updating = true;
         const price = Number(priceInput.value);
+        const oldPrice = Number(oldPriceInput.value);
         const discount = Number(discountInput.value);
-        if (price > 0 && discount > 0 && discount < 100) {
+
+        if (price > 0 && oldPrice > price) {
+          discountInput.value = (((oldPrice - price) / oldPrice) * 100).toFixed(2);
+        } else if (price > 0 && discount > 0 && discount < 100) {
           oldPriceInput.value = (price / (1 - (discount / 100))).toFixed(2);
+        } else if (!price) {
+          oldPriceInput.value = '';
+          discountInput.value = '';
         }
         updating = false;
         updatePreview();
@@ -962,11 +990,17 @@ function format_etb($val)
         if (updating) return;
         updating = true;
         const price = Number(priceInput.value);
+        const oldPrice = Number(oldPriceInput.value);
         const discount = Number(discountInput.value);
-        if (price > 0 && discount > 0 && discount < 100) {
+
+        if (oldPrice > 0 && discount > 0 && discount < 100) {
+          priceInput.value = (oldPrice * (1 - (discount / 100))).toFixed(2);
+        } else if (price > 0 && discount > 0 && discount < 100) {
           oldPriceInput.value = (price / (1 - (discount / 100))).toFixed(2);
         } else if (!discount) {
-          oldPriceInput.value = '';
+          if (!oldPrice) oldPriceInput.value = '';
+        } else if (discount <= 0 || discount >= 100) {
+          discountInput.value = '';
         }
         updating = false;
         updatePreview();
@@ -977,9 +1011,16 @@ function format_etb($val)
         updating = true;
         const price = Number(priceInput.value);
         const oldPrice = Number(oldPriceInput.value);
-        if (price > 0 && oldPrice > price) {
+        const discount = Number(discountInput.value);
+
+        if (oldPrice > 0 && discount > 0 && discount < 100) {
+          priceInput.value = (oldPrice * (1 - (discount / 100))).toFixed(2);
+        } else if (price > 0 && oldPrice > price) {
           discountInput.value = (((oldPrice - price) / oldPrice) * 100).toFixed(2);
         } else if (!oldPrice) {
+          discountInput.value = '';
+          priceInput.value = '';
+        } else if (oldPrice <= price) {
           discountInput.value = '';
         }
         updating = false;
@@ -1029,6 +1070,7 @@ function format_etb($val)
     // === SUCCESS MESSAGES ===
     const params = new URLSearchParams(window.location.search);
     if (params.get('saved') === '1') {
+      resetAddForm();
       Swal.fire({ icon: 'success', title: 'Saved!', text: 'Car saved.', timer: 3000, showConfirmButton: false });
       setTimeout(() => window.location.href = 'cars.php', 1000);
     }

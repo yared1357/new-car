@@ -45,7 +45,7 @@ $navItems = [
         <li>
           <a href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>"
             class="<?= $activeSidebar === $key
-              ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+              ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
               : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
             <svg class="h-6 w-6 <?= $activeSidebar === $key ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><?= $icon ?></svg>
             <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></span>
@@ -59,7 +59,7 @@ $navItems = [
       <?php if ($admin['role'] === 'super_admin'): ?>
         <li>
           <a href="admin_accounts.php" class="<?= $activeSidebar === 'admins'
-            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
             <svg class="h-6 w-6 <?= $activeSidebar === 'admins' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2m7-10a4 4 0 100-8 4 4 0 000 8zm13 10v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
             Manage Admins
@@ -67,7 +67,7 @@ $navItems = [
         </li>
         <li>
           <a href="admin_password_reset.php" class="<?= $activeSidebar === 'password_reset'
-            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
             <svg class="h-6 w-6 <?= $activeSidebar === 'password_reset' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 11V8a5 5 0 0110 0v3m-11 0h12v10H6V11zm6 4v2"/></svg>
             Reset Password
@@ -75,7 +75,7 @@ $navItems = [
         </li>
         <li>
           <a href="settings.php" class="<?= $activeSidebar === 'settings'
-            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
             <svg class="h-6 w-6 <?= $activeSidebar === 'settings' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15.5A3.5 3.5 0 1012 8a3.5 3.5 0 000 7.5zm0-13v2m0 15v2m10-9.5h-2m-16 0H2m17-7l-1.5 1.5M6.5 17.5L5 19m14 0l-1.5-1.5M6.5 6.5L5 5"/></svg>
             Site settings
@@ -83,7 +83,7 @@ $navItems = [
         </li>
         <li>
           <a href="social_links.php" class="<?= $activeSidebar === 'social'
-            ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+            ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
             : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
             <svg class="h-6 w-6 <?= $activeSidebar === 'social' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.6 13.5l6.8-4M9 15l6.5 4M8 12a3 3 0 100-6 3 3 0 000 6zm9-3a3 3 0 100-6 3 3 0 000 6zm-1 10a3 3 0 100-6 3 3 0 000 6z"/></svg>
             Social Links
@@ -93,7 +93,7 @@ $navItems = [
 
       <li>
         <a href="change_password.php" class="<?= $activeSidebar === 'password'
-          ? 'flex items-center gap-4 rounded-2xl bg-[#FFD84D] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
+          ? 'flex items-center gap-4 rounded-2xl bg-[#FCFCFC] px-5 py-3.5 text-base font-bold text-slate-900 shadow-lg'
           : 'flex items-center gap-4 rounded-xl px-5 py-3.5 text-base font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white' ?>">
           <svg class="h-6 w-6 <?= $activeSidebar === 'password' ? '' : 'text-slate-300' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 11V8a5 5 0 0110 0v3m-11 0h12v10H6V11z"/></svg>
           Password
@@ -102,12 +102,7 @@ $navItems = [
     </ul>
   </nav>
 
-  <div class="space-y-3 px-5 pb-5">
-    <a href="../index.php" target="_blank" rel="noopener noreferrer"
-      class="flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 py-3.5 text-base font-bold text-slate-100 transition hover:bg-white/15">
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6zm9.5 3a3 3 0 100-6 3 3 0 000 6z"/></svg>
-      View Site
-    </a>
+  <div class="px-5 pb-5">
     <form action="logout.php" method="POST" data-confirm-title="Log out?" data-confirm-message="Are you sure you want to log out of the admin panel?" data-confirm-button="Log out">
       <button type="submit"
         class="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 py-3.5 text-base font-bold text-slate-100 transition hover:border-red-400/40 hover:bg-red-500/10">
@@ -119,15 +114,15 @@ $navItems = [
 </aside>
 
 <dialog id="admin-confirm-dialog" class="w-[calc(100%-2rem)] max-w-md rounded-2xl border-0 bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-950/60">
-  <div class="p-6 sm:p-7">
-    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+  <div class="p-6 text-center sm:p-7">
+    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v4m0 4h.01M10.3 3.9L2.8 17a2 2 0 001.7 3h15a2 2 0 001.7-3l-7.5-13.1a2 2 0 00-3.4 0z"/></svg>
     </div>
     <h2 id="admin-confirm-title" class="text-xl font-bold">Are you sure?</h2>
     <p id="admin-confirm-message" class="mt-2 text-sm leading-6 text-slate-600"></p>
-    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-      <button type="button" id="admin-confirm-cancel" class="rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</button>
-      <button type="button" id="admin-confirm-accept" class="rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">Confirm</button>
+    <div class="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
+      <button type="button" id="admin-confirm-cancel" class="min-w-28 rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</button>
+      <button type="button" id="admin-confirm-accept" class="min-w-28 rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">Confirm</button>
     </div>
   </div>
 </dialog>

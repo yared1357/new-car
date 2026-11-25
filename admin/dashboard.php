@@ -3,8 +3,8 @@ require_once __DIR__ . '/session.php';
 
 // === STATISTICS ===
 $total_cars = $pdo->query("SELECT COUNT(*) FROM cars")->fetchColumn();
-$featured_cars = $pdo->query("SELECT COUNT(*) FROM cars WHERE featured = 1")->fetchColumn();
 $total_admins = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")->fetchColumn();
+$total_super_admins = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'super_admin'")->fetchColumn();
 $total_messages = $pdo->query("SELECT COUNT(*) FROM contact_messages")->fetchColumn();
 $unread_messages = $pdo->query("SELECT COUNT(*) FROM contact_messages WHERE is_read = 0")->fetchColumn();
 $total_slides = $pdo->query("SELECT COUNT(*) FROM hero_images")->fetchColumn();
@@ -209,11 +209,6 @@ foreach ($stmt->fetchAll() as $row) {
           <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_cars ?></p>
           <p class="mt-2 text-xs text-slate-400">View inventory</p>
         </a>
-        <a href="cars.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-          <p class="text-sm font-semibold text-slate-500">Featured Cars</p>
-          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $featured_cars ?></p>
-          <p class="mt-2 text-xs text-slate-400">Spotlight vehicles</p>
-        </a>
         <a href="hero_images.php" class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <p class="text-sm font-semibold text-slate-500">Hero Slides</p>
           <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_slides ?></p>
@@ -228,6 +223,11 @@ foreach ($stmt->fetchAll() as $row) {
           <p class="text-sm font-semibold text-slate-500">Admin Accounts</p>
           <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_admins ?></p>
           <p class="mt-2 text-xs text-slate-400">Administrator users</p>
+        </div>
+        <div class="stat-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <p class="text-sm font-semibold text-slate-500">Super Admin Accounts</p>
+          <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"><?= (int) $total_super_admins ?></p>
+          <p class="mt-2 text-xs text-slate-400">Super administrator users</p>
         </div>
       </div>
 

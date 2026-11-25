@@ -29,7 +29,7 @@ $navItems = [
       <img src="<?= htmlspecialchars($adminLogoPath, ENT_QUOTES, 'UTF-8') ?>" alt="Logo" class="h-12 w-12 flex-shrink-0 object-contain">
       <span class="min-w-0">
         <span class="block truncate text-base font-bold"><?= htmlspecialchars($shortName, ENT_QUOTES, 'UTF-8') ?></span>
-        <span class="mt-1 block text-xs font-bold tracking-widest text-amber-300"><?= $admin['role'] === 'super_admin' ? 'SUPER ADMIN' : 'ADMIN' ?></span>
+        <span class="mt-1 inline-block rounded-md bg-[#0f2a3d] px-2 py-1 text-xs font-bold tracking-widest text-white"><?= $admin['role'] === 'super_admin' ? 'SUPER ADMIN' : 'ADMIN' ?></span>
       </span>
     </a>
     <button id="sidebar-close-btn" class="ml-1 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-md lg:hidden" aria-label="Close sidebar">

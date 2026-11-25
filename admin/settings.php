@@ -219,9 +219,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <div class="flex flex-wrap gap-3">
         <button type="submit" class="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800">Save settings</button>
-        <a href="social_links.php" class="rounded-lg border px-6 py-3 font-semibold">Configure social media</a>
-        <a href="../index.php" class="rounded-lg border px-6 py-3 font-semibold">View website</a>
-      </div>
+        <a href="social_links.php" class="rounded-lg border px-6 py-3 font-semibold">Configure Social Media</a>
+         </div>
     </form>
     </div>
   </main>

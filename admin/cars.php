@@ -16,7 +16,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $fuel = $_POST['fuel_type'];
   $trans = $_POST['transmission'];
   $description = trim($_POST['description']);
-  $featured = isset($_POST['featured']) ? 1 : 0;
+  $discountPercentage = isset($_POST['discount_percentage']) && $_POST['discount_percentage'] !== ''
+    ? (float) $_POST['discount_percentage']
+    : 0.0;
+  $oldPrice = isset($_POST['old_price']) && $_POST['old_price'] !== ''
+    ? (float) $_POST['old_price']
+    : null;
+
+  if ($oldPrice !== null && $oldPrice > 0) {
+    $discountPercentage = $oldPrice > $price
+      ? (($oldPrice - $price) / $oldPrice) * 100
+      : 0.0;
+  } elseif ($discountPercentage > 0) {
+    $oldPrice = round($price / (1 - ($discountPercentage / 100)), 2);
+  }
+
+  $discountPercentage = round($discountPercentage, 2);
+  if ($discountPercentage < 0 || $discountPercentage >= 100) {
+    $error = 'Discount percentage must be between 0 and 99.99.';
+  }
+
   // Validate category/label against allowed values (optional field)
   $allowed_categories = ['New', 'Secondhand', 'Classic'];
   $category = null;
@@ -87,24 +106,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
+    $hasDiscountColumns = false;
+    try {
+      $discountCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'cars' AND column_name IN ('discount_percentage', 'old_price')");
+      $discountCheck->execute();
+      $hasDiscountColumns = ((int) $discountCheck->fetchColumn() === 2);
+    } catch (Exception $e) {
+      $hasDiscountColumns = false;
+    }
+
+    if (!$hasDiscountColumns) {
+      try {
+        $pdo->exec("ALTER TABLE cars ADD COLUMN discount_percentage DECIMAL(5,2) DEFAULT 0.00, ADD COLUMN old_price DECIMAL(10,2) DEFAULT NULL");
+        $hasDiscountColumns = true;
+      } catch (Exception $e) {
+        $hasDiscountColumns = false;
+      }
+    }
+
     $imageJson = json_encode($images);
     $primaryImage = $images[0] ?? '';
     if (isset($_POST['edit_id']) && $_POST['edit_id'] !== '') {
       $id = (int) $_POST['edit_id'];
-      if ($hasCategory) {
-        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, category=?, created_at=NOW() WHERE id=?");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category, $id]);
+      if ($hasCategory && $hasDiscountColumns) {
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, category=?, discount_percentage=?, old_price=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $category, $discountPercentage, $oldPrice, $id]);
+      } elseif ($hasDiscountColumns) {
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, discount_percentage=?, old_price=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $discountPercentage, $oldPrice, $id]);
+      } elseif ($hasCategory) {
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, category=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $category, $id]);
       } else {
-        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, created_at=NOW() WHERE id=?");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $id]);
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $id]);
       }
     } else {
-      if ($hasCategory) {
-        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category]);
+      if ($hasCategory && $hasDiscountColumns) {
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, category, discount_percentage, old_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $category, $discountPercentage, $oldPrice]);
+      } elseif ($hasDiscountColumns) {
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, discount_percentage, old_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $discountPercentage, $oldPrice]);
+      } elseif ($hasCategory) {
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $category]);
       } else {
-        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured]);
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage]);
       }
     }
 
@@ -225,6 +274,17 @@ function format_etb($val)
     .carousel::-webkit-scrollbar-thumb {
       background: #888;
       border-radius: 3px;
+    }
+
+    .no-spinner::-webkit-inner-spin-button,
+    .no-spinner::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .no-spinner {
+      appearance: textfield;
+      -moz-appearance: textfield;
     }
   </style>
 </head>
@@ -380,7 +440,17 @@ function format_etb($val)
               <?php endif; ?>
               <div class="flex items-center justify-between mb-2">
                 <p class="text-xl font-bold text-primary"><?= htmlspecialchars(format_etb($car['price'])) ?></p>
+                <?php if (!empty($car['discount_percentage']) && (float) $car['discount_percentage'] > 0): ?>
+                  <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                    -<?= rtrim(rtrim(number_format((float) $car['discount_percentage'], 2, '.', ''), '0'), '.') ?>%
+                  </span>
+                <?php endif; ?>
               </div>
+              <?php if (!empty($car['old_price']) && !empty($car['discount_percentage']) && (float) $car['discount_percentage'] > 0): ?>
+                <p class="mb-2 text-sm text-gray-500 line-through">
+                  Previous price: <?= htmlspecialchars(format_etb($car['old_price'])) ?>
+                </p>
+              <?php endif; ?>
               <div class="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <div>Year: <?= $car['year'] ?></div>
                 <div>Mileage: <?= number_format($car['mileage']) ?> km</div>
@@ -397,9 +467,6 @@ function format_etb($val)
                     <button class="text-primary text-xs mt-1 read-more-btn">Read More</button>
                   <?php endif; ?>
                 </div>
-              <?php endif; ?>
-              <?php if ($car['featured']): ?>
-                <span class="inline-block mt-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Featured</span>
               <?php endif; ?>
               <div class="mt-4 flex gap-2">
                 <a href="?edit=<?= $car['id'] ?>"
@@ -457,14 +524,31 @@ function format_etb($val)
               </div>
             </div>
 
-            <div class="grid md:grid-cols-1 gap-4">
+            <div class="grid md:grid-cols-3 gap-4">
               <div>
                 <label for="price" class="block text-sm font-medium mb-1">Current Price (ETB)</label>
                 <input type="number" id="price" name="price" required placeholder="Current Price (ETB)" step="0.01"
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                  class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                 <p id="price-error" class="mt-1 text-xs text-red-600"></p>
               </div>
+              <div>
+                <label for="old_price" class="block text-sm font-medium mb-1">Previous/Older Value (optional)</label>
+                <input type="number" id="old_price" name="old_price" min="0" step="0.01"
+                  placeholder="Older value"
+                  class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+              </div>
+              <div>
+                <label for="discount_percentage" class="block text-sm font-medium mb-1">Discount (optional)</label>
+                <div class="relative">
+                  <input type="number" id="discount_percentage" name="discount_percentage" min="0" max="99.99" step="0.01"
+                    placeholder="Percent"
+                    class="no-spinner w-full px-4 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                  <span class="absolute inset-y-0 right-3 flex items-center text-sm font-semibold text-gray-500">%</span>
+                </div>
+              </div>
             </div>
+            <div id="old-price-preview"
+              class="mt-3 hidden rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900"></div>
 
             <div class="grid md:grid-cols-2 gap-4">
               <div>
@@ -502,10 +586,6 @@ function format_etb($val)
                     <option value="Secondhand">Secondhand</option>
                     <option value="Classic">Classic</option>
                   </select>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="featured" name="featured" class="w-5 h-5">
-                  <label for="featured" class="text-sm font-medium">Featured</label>
                 </div>
               </div>
             </div>
@@ -575,15 +655,34 @@ function format_etb($val)
                 </div>
               </div>
 
-              <div class="grid md:grid-cols-1 gap-4">
+              <div class="grid md:grid-cols-3 gap-4">
                 <div>
                   <label for="edit-price" class="block text-sm font-medium mb-1">Current Price (ETB)</label>
                   <input type="number" id="edit-price" name="price" required placeholder="Current Price (ETB)" step="0.01"
                     value="<?= $editCar['price'] ?>"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                   <p id="edit-price-error" class="mt-1 text-xs text-red-600"></p>
                 </div>
+                <div>
+                  <label for="edit-old_price" class="block text-sm font-medium mb-1">Previous/Older Value (optional)</label>
+                  <input type="number" id="edit-old_price" name="old_price" min="0" step="0.01"
+                    value="<?= isset($editCar['old_price']) && $editCar['old_price'] !== null ? htmlspecialchars($editCar['old_price']) : '' ?>"
+                    placeholder="Older value"
+                    class="no-spinner w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                  <label for="edit-discount_percentage" class="block text-sm font-medium mb-1">Discount (optional)</label>
+                  <div class="relative">
+                    <input type="number" id="edit-discount_percentage" name="discount_percentage" min="0" max="99.99" step="0.01"
+                      value="<?= isset($editCar['discount_percentage']) ? htmlspecialchars(rtrim(rtrim(number_format((float) $editCar['discount_percentage'], 2, '.', ''), '0'), '.')) : '0' ?>"
+                      placeholder="Percent"
+                      class="no-spinner w-full px-4 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    <span class="absolute inset-y-0 right-3 flex items-center text-sm font-semibold text-gray-500">%</span>
+                  </div>
+                </div>
               </div>
+              <div id="edit-old-price-preview"
+                class="mt-3 hidden rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900"></div>
 
               <div class="grid md:grid-cols-2 gap-4 mt-4">
                 <div>
@@ -622,11 +721,6 @@ function format_etb($val)
                       <option value="Secondhand" <?= isset($editCar['category']) && $editCar['category'] === 'Secondhand' ? 'selected' : '' ?>>Secondhand</option>
                       <option value="Classic" <?= isset($editCar['category']) && $editCar['category'] === 'Classic' ? 'selected' : '' ?>>Classic</option>
                     </select>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <input type="checkbox" id="edit-featured" name="featured" <?= $editCar['featured'] ? 'checked' : '' ?>
-                      class="w-5 h-5">
-                    <label for="edit-featured" class="text-sm font-medium">Featured</label>
                   </div>
                 </div>
               </div>
@@ -819,6 +913,85 @@ function format_etb($val)
 
     closeEditModal?.addEventListener('click', confirmAndCloseEditModal);
     cancelEdit?.addEventListener('click', confirmAndCloseEditModal);
+
+    function setupDiscountPreview(priceId, oldPriceId, discountId, previewId) {
+      const priceInput = document.getElementById(priceId);
+      const oldPriceInput = document.getElementById(oldPriceId);
+      const discountInput = document.getElementById(discountId);
+      const preview = document.getElementById(previewId);
+      if (!priceInput || !oldPriceInput || !discountInput || !preview) return;
+
+      let updating = false;
+      const formatNumber = (value) => Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      const updatePreview = () => {
+        const price = Number(priceInput.value);
+        const oldPrice = Number(oldPriceInput.value);
+        const discount = Number(discountInput.value);
+
+        if (price > 0 && oldPrice > price && discount > 0 && discount < 100) {
+          preview.innerHTML = `
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span><strong>Current price:</strong> ETB ${formatNumber(price)}</span>
+              <span><strong>Previous/Older value:</strong> ETB ${formatNumber(oldPrice)}</span>
+              <span class="rounded-full border border-green-300 bg-white px-2 py-1 font-bold text-green-700">-${discount}%</span>
+            </div>`;
+          preview.classList.remove('hidden');
+        } else {
+          preview.innerHTML = '';
+          preview.classList.add('hidden');
+        }
+      };
+
+      priceInput.addEventListener('input', () => {
+        if (updating) return;
+        updating = true;
+        const price = Number(priceInput.value);
+        const discount = Number(discountInput.value);
+        if (price > 0 && discount > 0 && discount < 100) {
+          oldPriceInput.value = (price / (1 - (discount / 100))).toFixed(2);
+        }
+        updating = false;
+        updatePreview();
+      });
+
+      discountInput.addEventListener('input', () => {
+        if (updating) return;
+        updating = true;
+        const price = Number(priceInput.value);
+        const discount = Number(discountInput.value);
+        if (price > 0 && discount > 0 && discount < 100) {
+          oldPriceInput.value = (price / (1 - (discount / 100))).toFixed(2);
+        } else if (!discount) {
+          oldPriceInput.value = '';
+        }
+        updating = false;
+        updatePreview();
+      });
+
+      oldPriceInput.addEventListener('input', () => {
+        if (updating) return;
+        updating = true;
+        const price = Number(priceInput.value);
+        const oldPrice = Number(oldPriceInput.value);
+        if (price > 0 && oldPrice > price) {
+          discountInput.value = (((oldPrice - price) / oldPrice) * 100).toFixed(2);
+        } else if (!oldPrice) {
+          discountInput.value = '';
+        }
+        updating = false;
+        updatePreview();
+      });
+
+      updatePreview();
+    }
+
+    setupDiscountPreview('price', 'old_price', 'discount_percentage', 'old-price-preview');
+    setupDiscountPreview('edit-price', 'edit-old_price', 'edit-discount_percentage', 'edit-old-price-preview');
+
     // Prevent closing by clicking outside or pressing escape
     editModal?.addEventListener('click', (e) => { if (e.target === editModal) e.stopPropagation(); });
     document.addEventListener('keydown', (e) => {

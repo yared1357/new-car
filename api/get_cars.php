@@ -13,7 +13,8 @@ try {
     $stmt = $pdo->query("
         SELECT
             id, make, model, year, price,
-            mileage, fuel_type, transmission, description, featured, images, category, created_at
+            mileage, fuel_type, transmission, description, featured, images, category,
+            discount_percentage, old_price, created_at
         FROM cars
         ORDER BY featured DESC, created_at DESC
     ");
@@ -40,6 +41,8 @@ try {
             'year'                => (int)$car['year'],
             'price'               => (float)$car['price'],
             'price_formatted'     => '$' . number_format($car['price']),
+            'discount_percentage' => (float)($car['discount_percentage'] ?? 0),
+            'old_price'           => isset($car['old_price']) && $car['old_price'] !== null ? (float)$car['old_price'] : null,
             'mileage'             => (int)$car['mileage'],
             'mileage_formatted'   => number_format($car['mileage']) . ' km',
             'fuel_type'           => $car['fuel_type'],

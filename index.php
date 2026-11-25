@@ -406,6 +406,19 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       font-weight: 700;
     }
 
+    .old-price {
+      color: #6b7280;
+      text-decoration: line-through;
+    }
+
+    .discount-badge {
+      background: #fee2e2;
+      color: #991b1b;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+
     @media (min-width: 640px) {
       .current-price {
         font-size: 1.25rem;
@@ -418,24 +431,6 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       }
     }
 
-    /* Make current value slightly smaller relative to surrounding headings */
-    .current-price.small {
-      font-size: 0.95rem;
-    }
-
-    .old-price {
-      color: #6b7280;
-      /* gray-500 */
-      text-decoration: line-through;
-    }
-
-    .discount-badge {
-      background: #fee2e2;
-      color: #991b1b;
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 9999px;
-    }
   </style>
 
   <!-- ===== Contact success message fade up! ===== -->
@@ -663,7 +658,12 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
             <div class="price-row text-center text-lg sm:text-xl md:text-2xl font-bold">
               ${(() => {
             const p = formatETB(car.price ?? car.price_formatted) || '';
-            return `<p class="current-price text-primary">${p.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>`;
+            const current = `<p class="current-price text-primary">${p.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>`;
+            if (Number(car.discount_percentage) > 0 && car.old_price) {
+              const oldPrice = formatETB(car.old_price);
+              return `${current}<span class="discount-badge">-${Number(car.discount_percentage).toFixed(Number(car.discount_percentage) % 1 ? 2 : 0)}%</span><span class="old-price text-sm">${oldPrice}</span>`;
+            }
+            return current;
           })()}
             </div>
           </div>
@@ -680,7 +680,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <p class="text-sm text-black description-text mt-2" data-full="${car.description ? car.description.replace(/"/g, '&quot;') : ''}"></p>
           ${car.category ? `<span class="inline-block mt-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${car.category}</span>` : ''}
           ${car.featured ? '<span class="inline-block mt-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Featured</span>' : ''}
-          <button class="block mt-4 bg-primary hover:bg-blue-800 text-white text-center py-2 rounded-lg text-sm font-medium transition w-full" data-images='${JSON.stringify(car.images)}' data-make="${car.make}" data-model="${car.model}" data-year="${car.year}" data-price="${car.price || car.price_formatted}" data-mileage="${car.mileage_formatted}" data-fuel="${car.fuel_type}" data-transmission="${car.transmission}" data-description="${car.description.replace(/"/g, '"')}" onclick="openModal(this)">
+          <button class="block mt-4 bg-primary hover:bg-blue-800 text-white text-center py-2 rounded-lg text-sm font-medium transition w-full" data-images='${JSON.stringify(car.images)}' data-make="${car.make}" data-model="${car.model}" data-year="${car.year}" data-price="${car.price || car.price_formatted}" data-old-price="${car.old_price || ''}" data-discount="${car.discount_percentage || 0}" data-mileage="${car.mileage_formatted}" data-fuel="${car.fuel_type}" data-transmission="${car.transmission}" data-description="${car.description.replace(/"/g, '"')}" onclick="openModal(this)">
             View Details
           </button>
         </div>
@@ -995,9 +995,15 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       document.getElementById('modal-make-model').textContent = btn.dataset.make + ' ' + btn.dataset.model;
       // Build centered current-price row
       const modalPriceRaw = formatETB(btn.dataset.price || '');
+      const discount = Number(btn.dataset.discount || 0);
+      const oldPriceRaw = btn.dataset.oldPrice || '';
+      const oldPriceHtml = discount > 0 && oldPriceRaw
+        ? `<span class="discount-badge">-${discount.toFixed(discount % 1 ? 2 : 0)}%</span><span class="old-price text-sm">${formatETB(oldPriceRaw)}</span>`
+        : '';
       const priceRowHtml = `
       <div class="price-row text-center">
         <p class="current-price text-primary">${modalPriceRaw.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>
+        ${oldPriceHtml}
       </div>
     `;
       const modalPriceRowEl = document.getElementById('modal-price-row');

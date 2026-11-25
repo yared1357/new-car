@@ -23,9 +23,6 @@ class AdminTest extends TestCase
         $_POST['fuel_type'] = 'Petrol';
         $_POST['transmission'] = 'Automatic';
         $_POST['description'] = 'Test description';
-        $_POST['featured'] = 1;
-        $_POST['discount_percentage'] = 10;
-        $_POST['old_price'] = 11000;
 
         // Include the script to be tested
         include 'c:/xamppNew/htdocs/car-selling/admin/cars.php';

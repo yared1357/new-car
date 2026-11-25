@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS `cars` (
   `image_url` text NOT NULL,
   `featured` tinyint(1) DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
+  `discount_percentage` decimal(5,2) DEFAULT 0.00,
+  `old_price` decimal(10,2) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `images` longtext DEFAULT '[]',
   `category` varchar(32) DEFAULT NULL,
@@ -22,12 +24,12 @@ CREATE TABLE IF NOT EXISTS `cars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT IGNORE INTO `cars`
-  (`id`, `make`, `model`, `year`, `price`, `mileage`, `fuel_type`, `transmission`, `image_url`, `featured`, `created_at`, `description`, `images`, `category`)
+  (`id`, `make`, `model`, `year`, `price`, `mileage`, `fuel_type`, `transmission`, `image_url`, `featured`, `created_at`, `discount_percentage`, `old_price`, `description`, `images`, `category`)
 VALUES
-  (4, 'Toyota', 'Camry', 2022, 1333333.34, 3000, 'Diesel', 'Automatic', '', 0, '2025-12-23 02:20:37', 'The Toyota Camry combines reliability with modern style. Featuring a spacious interior, advanced safety features, and a fuel-efficient engine, the Camry is perfect for families and commuters alike. Enjoy a smooth ride with intuitive technology at your fingertips.', '["uploads/car_694a6c703189b.jpeg","uploads/car_694a6c7031b6d.jpeg"]', 'New'),
-  (5, 'Ford', 'F-150', 2023, 1272727.27, 12000, 'Electric', 'Automatic', '', 0, '2025-12-23 02:20:23', 'The Ford F-150 is America''s best-selling truck for a reason. With robust towing capacity, a variety of powerful engines, and a suite of tech features, it''s built to tackle any job. The spacious interior and advanced safety systems make it a great choice for work or play.', '["uploads/car_694a6ce77aa8f.jpeg","uploads/car_694a6ce77af33.jpeg","uploads/car_694a6ce77b20e.jpeg","uploads/car_694a6ce77b533.jpeg"]', NULL),
-  (6, 'BMW', '3 Series', 2025, 1900000.00, 2400, 'Hybrid', 'Manual', '', 1, '2025-12-23 02:22:25', 'The BMW 3 Series stands out with its luxurious interior and sporty performance. With precise handling, turbocharged power, and cutting-edge technology, this sedan offers an exhilarating driving experience. Perfect for those who desire both sophistication and speed.', '["uploads/car_694a6d6192dda.jpeg","uploads/car_694a6d6193130.jpeg","uploads/car_694a6d61932ff.jpeg","uploads/car_694a6d6193520.jpeg"]', 'Secondhand'),
-  (7, 'Mercedes-Benz', 'C-Class', 2020, 1877551.02, 2500, 'Electric', 'Automatic', '', 0, '2025-12-23 02:23:40', 'The Mercedes-Benz C-Class offers a perfect blend of luxury and performance. With its refined interior, advanced safety features, and powerful engine options, it promises a comfortable and exhilarating ride. Ideal for those who appreciate elegance on the road.', '["uploads/car_694a6dac3e03f.jpeg","uploads/car_694a6dac3e288.jpeg","uploads/car_694a6dac3e4d0.jpeg"]', NULL);
+  (4, 'Toyota', 'Camry', 2022, 1333333.34, 3000, 'Diesel', 'Automatic', '', 0, '2025-12-23 02:20:37', 0.00, NULL, 'The Toyota Camry combines reliability with modern style. Featuring a spacious interior, advanced safety features, and a fuel-efficient engine, the Camry is perfect for families and commuters alike. Enjoy a smooth ride with intuitive technology at your fingertips.', '["uploads/car_694a6c703189b.jpeg","uploads/car_694a6c7031b6d.jpeg"]', 'New'),
+  (5, 'Ford', 'F-150', 2023, 1272727.27, 12000, 'Electric', 'Automatic', '', 0, '2025-12-23 02:20:23', 0.00, NULL, 'The Ford F-150 is America''s best-selling truck for a reason. With robust towing capacity, a variety of powerful engines, and a suite of tech features, it''s built to tackle any job. The spacious interior and advanced safety systems make it a great choice for work or play.', '["uploads/car_694a6ce77aa8f.jpeg","uploads/car_694a6ce77af33.jpeg","uploads/car_694a6ce77b20e.jpeg","uploads/car_694a6ce77b533.jpeg"]', NULL),
+  (6, 'BMW', '3 Series', 2025, 1900000.00, 2400, 'Hybrid', 'Manual', '', 1, '2025-12-23 02:22:25', 0.00, NULL, 'The BMW 3 Series stands out with its luxurious interior and sporty performance. With precise handling, turbocharged power, and cutting-edge technology, this sedan offers an exhilarating driving experience. Perfect for those who desire both sophistication and speed.', '["uploads/car_694a6d6192dda.jpeg","uploads/car_694a6d6193130.jpeg","uploads/car_694a6d61932ff.jpeg","uploads/car_694a6d6193520.jpeg"]', 'Secondhand'),
+  (7, 'Mercedes-Benz', 'C-Class', 2020, 1877551.02, 2500, 'Electric', 'Automatic', '', 0, '2025-12-23 02:23:40', 0.00, NULL, 'The Mercedes-Benz C-Class offers a perfect blend of luxury and performance. With its refined interior, advanced safety features, and powerful engine options, it promises a comfortable and exhilarating ride. Ideal for those who appreciate elegance on the road.', '["uploads/car_694a6dac3e03f.jpeg","uploads/car_694a6dac3e288.jpeg","uploads/car_694a6dac3e4d0.jpeg"]', NULL);
 
 CREATE TABLE IF NOT EXISTS `contact_messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

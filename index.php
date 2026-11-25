@@ -568,15 +568,13 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
 
     <!-- SEARCH & FILTER BAR (IMPROVED) -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-      <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-1 sm:gap-4">
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 sm:gap-4">
         <input type="text" id="search-input" placeholder="Search..."
-          class="hidden md:block border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary whitespace-nowrap overflow-hidden text-ellipsis">
-        <input type="number" id="filter-year" placeholder="Year" min="1980"
-          class="hidden md:block border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
-        <input type="number" id="filter-price-min" placeholder="Min Price"
-          class="hidden md:block border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
-        <input type="number" id="filter-price-max" placeholder="Max Price"
-          class="hidden md:block border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+          class="col-span-2 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary whitespace-nowrap overflow-hidden text-ellipsis sm:col-span-1">
+        <select id="filter-year"
+          class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          <option value="">Year</option>
+        </select>
         <select id="filter-category"
           class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
           <option value="">Category</option>
@@ -587,16 +585,6 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
         <select id="filter-brand"
           class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
           <option value="">Brand</option>
-        </select>
-        <select id="sort-by"
-          class="hidden md:block border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
-          <option value="">Sort By</option>
-          <option value="newest">Newest</option>
-          <option value="price-asc">Price: Low â†’ High</option>
-          <option value="price-desc">Price: High â†’ Low</option>
-          <option value="year-desc">Year: New â†’ Old</option>
-          <option value="year-asc">Year: Old â†’ New</option>
-          <option value="featured">Featured First</option>
         </select>
         <select id="filter-fuel"
           class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
@@ -677,8 +665,6 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
             const p = formatETB(car.price ?? car.price_formatted) || '';
             return `<p class="current-price text-primary">${p.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>`;
           })()}
-              ${car.discount_percentage ? `<span class="discount-badge">-${car.discount_percentage}%</span>` : ''}
-              ${((car.old_price || car.old_price_formatted) ? `<p class="old-price text-sm">${formatETB(car.old_price ?? car.old_price_formatted).replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>` : '')}
             </div>
           </div>
           <div class="w-[98%] mx-auto text-black">
@@ -694,7 +680,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <p class="text-sm text-black description-text mt-2" data-full="${car.description ? car.description.replace(/"/g, '&quot;') : ''}"></p>
           ${car.category ? `<span class="inline-block mt-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${car.category}</span>` : ''}
           ${car.featured ? '<span class="inline-block mt-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Featured</span>' : ''}
-          <button class="block mt-4 bg-primary hover:bg-blue-800 text-white text-center py-2 rounded-lg text-sm font-medium transition w-full" data-images='${JSON.stringify(car.images)}' data-make="${car.make}" data-model="${car.model}" data-year="${car.year}" data-price="${car.price || car.price_formatted}" data-old-price="${car.old_price || car.old_price_formatted || ''}" data-discount="${car.discount_percentage || ''}" data-mileage="${car.mileage_formatted}" data-fuel="${car.fuel_type}" data-transmission="${car.transmission}" data-description="${car.description.replace(/"/g, '"')}" onclick="openModal(this)">
+          <button class="block mt-4 bg-primary hover:bg-blue-800 text-white text-center py-2 rounded-lg text-sm font-medium transition w-full" data-images='${JSON.stringify(car.images)}' data-make="${car.make}" data-model="${car.model}" data-year="${car.year}" data-price="${car.price || car.price_formatted}" data-mileage="${car.mileage_formatted}" data-fuel="${car.fuel_type}" data-transmission="${car.transmission}" data-description="${car.description.replace(/"/g, '"')}" onclick="openModal(this)">
             View Details
           </button>
         </div>
@@ -717,7 +703,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           initCarousels();
           initReadMore();
           setupFilters();
-          // Populate brand dropdown from DB
+          populateYearFilter();
           loadBrands();
         } else {
           document.getElementById('car-grid').innerHTML = '<p class="text-center text-red-500">Failed to load cars.</p>';
@@ -806,11 +792,8 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       const inputs = [
         '#search-input',
         '#filter-year',
-        '#filter-price-min',
-        '#filter-price-max',
         '#filter-category',
         '#filter-brand',
-        '#sort-by',
         '#filter-fuel',
         '#filter-type'
       ];
@@ -824,11 +807,8 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     function filterCars() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
       const year = document.getElementById('filter-year').value;
-      const minPrice = document.getElementById('filter-price-min').value || 0;
-      const maxPrice = document.getElementById('filter-price-max').value || Infinity;
       const category = document.getElementById('filter-category').value || '';
       const brand = document.getElementById('filter-brand').value.toLowerCase() || '';
-      const sortBy = document.getElementById('sort-by').value || '';
       const fuel = document.getElementById('filter-fuel').value;
       const trans = document.getElementById('filter-type').value;
 
@@ -836,31 +816,13 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
         const text = `${car.make} ${car.model} ${car.year} ${car.price} ${car.category || ''}`.toLowerCase();
         const matchesQuery = text.includes(query);
         const matchesYear = !year || car.year == year;
-        const matchesPrice = car.price >= minPrice && car.price <= maxPrice;
         const matchesFuel = !fuel || car.fuel_type === fuel;
         const matchesTrans = !trans || car.transmission === trans;
         const matchesCategory = !category || (car.category && car.category === category);
         const matchesBrand = !brand || (car.make && car.make.toLowerCase() === brand);
 
-        return matchesQuery && matchesYear && matchesPrice && matchesFuel && matchesTrans && matchesCategory && matchesBrand;
+        return matchesQuery && matchesYear && matchesFuel && matchesTrans && matchesCategory && matchesBrand;
       });
-
-      // Sorting
-      if (sortBy) {
-        filtered.sort((a, b) => {
-          switch (sortBy) {
-            case 'price-asc': return (a.price || 0) - (b.price || 0);
-            case 'price-desc': return (b.price || 0) - (a.price || 0);
-            case 'year-asc': return (a.year || 0) - (b.year || 0);
-            case 'year-desc': return (b.year || 0) - (a.year || 0);
-            case 'featured': return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-            case 'newest':
-            default:
-              // keep existing order (assumes allCars is already newest-first)
-              return 0;
-          }
-        });
-      }
 
       renderCars(filtered);
       initCarousels();
@@ -877,6 +839,26 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
         opt.textContent = b;
         brandSelect.appendChild(opt);
       });
+    }
+
+    function populateYearFilter() {
+      const yearSelect = document.getElementById('filter-year');
+      while (yearSelect.options.length > 1) yearSelect.remove(1);
+
+      const yearCounts = allCars.reduce((counts, car) => {
+        const year = String(car.year || '').trim();
+        if (/^\d{4}$/.test(year)) counts[year] = (counts[year] || 0) + 1;
+        return counts;
+      }, {});
+
+      Object.entries(yearCounts)
+        .sort((a, b) => Number(b[0]) - Number(a[0]))
+        .forEach(([year, count]) => {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = `${year} (${count})`;
+          yearSelect.appendChild(option);
+        });
     }
 
     // Load brands from the database via API and populate the brand select
@@ -1011,14 +993,11 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
 
       // Details
       document.getElementById('modal-make-model').textContent = btn.dataset.make + ' ' + btn.dataset.model;
-      // Build combined centered price row (current price, discount badge, old price)
+      // Build centered current-price row
       const modalPriceRaw = formatETB(btn.dataset.price || '');
-      const modalOldRaw = btn.dataset.oldPrice ? formatETB(btn.dataset.oldPrice) : '';
       const priceRowHtml = `
       <div class="price-row text-center">
         <p class="current-price text-primary">${modalPriceRaw.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>
-        ${btn.dataset.discount ? `<span class="discount-badge">-${btn.dataset.discount}%</span>` : ''}
-        ${modalOldRaw ? `<p class="old-price text-sm">${modalOldRaw.replace(/^ETB\s?/, '<span class="currency">ETB</span> ')}</p>` : ''}
       </div>
     `;
       const modalPriceRowEl = document.getElementById('modal-price-row');

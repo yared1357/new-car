@@ -12,7 +12,7 @@ header('Cache-Control: public, max-age=30');
 try {
     $stmt = $pdo->query("
         SELECT
-            id, make, model, year, price, old_price, discount_percentage,
+            id, make, model, year, price,
             mileage, fuel_type, transmission, description, featured, images, category, created_at
         FROM cars
         ORDER BY featured DESC, created_at DESC
@@ -33,12 +33,6 @@ try {
         $full_images = array_map(fn($img) => rtrim($base_url, '/') . '/' . ltrim($img, '/'), $images);
         $first_image = !empty($full_images) ? $full_images[0] : null;
 
-        // Auto-calculate discount if missing
-        $discount = (float)$car['discount_percentage'];
-        if ($discount == 0 && $car['old_price'] > 0 && $car['price'] < $car['old_price']) {
-            $discount = round((($car['old_price'] - $car['price']) / $car['old_price']) * 100, 1);
-        }
-
         $result[] = [
             'id'                  => (int)$car['id'],
             'make'                => $car['make'],
@@ -46,9 +40,6 @@ try {
             'year'                => (int)$car['year'],
             'price'               => (float)$car['price'],
             'price_formatted'     => '$' . number_format($car['price']),
-            'old_price'           => $car['old_price'] > 0 ? (float)$car['old_price'] : null,
-            'old_price_formatted' => $car['old_price'] > 0 ? '$' . number_format($car['old_price']) : null,
-            'discount_percentage' => $discount > 0 ? $discount : null,
             'mileage'             => (int)$car['mileage'],
             'mileage_formatted'   => number_format($car['mileage']) . ' km',
             'fuel_type'           => $car['fuel_type'],

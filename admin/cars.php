@@ -23,8 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['category']) && in_array($_POST['category'], $allowed_categories, true)) {
     $category = $_POST['category'];
   }
-  $discount = (float) $_POST['discount_percentage'];
-  $old_price = (float) $_POST['old_price'];
 
   // Preserve existing images when editing: if edit_id present, load images from DB
   $images = [];
@@ -94,19 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['edit_id']) && $_POST['edit_id'] !== '') {
       $id = (int) $_POST['edit_id'];
       if ($hasCategory) {
-        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, category=?, discount_percentage=?, old_price=?, created_at=NOW() WHERE id=?");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category, $discount, $old_price, $id]);
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, category=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category, $id]);
       } else {
-        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, discount_percentage=?, old_price=?, created_at=NOW() WHERE id=?");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $discount, $old_price, $id]);
+        $stmt = $pdo->prepare("UPDATE cars SET make=?, model=?, year=?, price=?, mileage=?, fuel_type=?, transmission=?, description=?, images=?, image_url=?, featured=?, created_at=NOW() WHERE id=?");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $id]);
       }
     } else {
       if ($hasCategory) {
-        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured, category, discount_percentage, old_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category, $discount, $old_price]);
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $category]);
       } else {
-        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured, discount_percentage, old_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured, $discount, $old_price]);
+        $stmt = $pdo->prepare("INSERT INTO cars (make, model, year, price, mileage, fuel_type, transmission, description, images, image_url, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$make, $model, $year, $price, $mileage, $fuel, $trans, $description, $imageJson, $primaryImage, $featured]);
       }
     }
 
@@ -381,14 +379,7 @@ function format_etb($val)
                 </div>
               <?php endif; ?>
               <div class="flex items-center justify-between mb-2">
-                <?php if ($car['old_price']): ?>
-                  <p class="text-sm text-gray-500 line-through"><?= htmlspecialchars(format_etb($car['old_price'])) ?></p>
-                <?php endif; ?>
                 <p class="text-xl font-bold text-primary"><?= htmlspecialchars(format_etb($car['price'])) ?></p>
-                <?php if ($car['discount_percentage'] > 0): ?>
-                  <span
-                    class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">-<?= $car['discount_percentage'] ?>%</span>
-                <?php endif; ?>
               </div>
               <div class="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <div>Year: <?= $car['year'] ?></div>
@@ -466,34 +457,13 @@ function format_etb($val)
               </div>
             </div>
 
-            <!-- PRICE / OLD PRICE / DISCOUNT (ONE ROW ON LARGE SCREENS) -->
-            <div class="grid md:grid-cols-3 gap-4">
+            <div class="grid md:grid-cols-1 gap-4">
               <div>
                 <label for="price" class="block text-sm font-medium mb-1">Current Price (ETB)</label>
                 <input type="number" id="price" name="price" required placeholder="Current Price (ETB)" step="0.01"
                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                 <p id="price-error" class="mt-1 text-xs text-red-600"></p>
               </div>
-              <div>
-                <label for="old_price" class="block text-sm font-medium mb-1">Old Price(ETB)</label>
-                <input type="number" id="old_price" name="old_price" placeholder="Old Price(ETB)" step="0.01"
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                <p id="old-price-error" class="mt-1 text-xs text-red-600"></p>
-              </div>
-              <div>
-                <label for="discount_percentage" class="block text-sm font-medium mb-1">Discount %</label>
-                <input type="number" id="discount_percentage" name="discount_percentage" placeholder="Discount %"
-                  min="0" max="100" step="0.01"
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                <p id="discount-error" class="mt-1 text-xs text-red-600"></p>
-              </div>
-            </div>
-
-            <!-- DISCOUNT CALCULATION PREVIEW JUST BELOW PRICE ROW -->
-            <div id="discount-preview" class="bg-green-50 dark:bg-green-900 p-4 rounded-lg text-sm">
-              <p><strong>Old Price:</strong> <span id="old-price-display"></span></p>
-              <p><strong>Current Price:</strong> <span id="current-price-display"></span></p>
-              <p><strong>Discount:</strong> <span id="discount-display"></span></p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-4">
@@ -605,8 +575,7 @@ function format_etb($val)
                 </div>
               </div>
 
-              <!-- EDIT PRICE / OLD PRICE / DISCOUNT (ONE ROW ON LARGE SCREENS) -->
-              <div class="grid md:grid-cols-3 gap-4">
+              <div class="grid md:grid-cols-1 gap-4">
                 <div>
                   <label for="edit-price" class="block text-sm font-medium mb-1">Current Price (ETB)</label>
                   <input type="number" id="edit-price" name="price" required placeholder="Current Price (ETB)" step="0.01"
@@ -614,27 +583,6 @@ function format_etb($val)
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                   <p id="edit-price-error" class="mt-1 text-xs text-red-600"></p>
                 </div>
-                <div>
-                  <label for="edit-old_price" class="block text-sm font-medium mb-1">Old Price(ETB)</label>
-                  <input type="number" id="edit-old_price" name="old_price" placeholder="Old Price(ETB)" step="0.01"
-                    value="<?= $editCar['old_price'] ?>"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                  <p id="edit-old-price-error" class="mt-1 text-xs text-red-600"></p>
-                </div>
-                <div>
-                  <label for="edit-discount_percentage" class="block text-sm font-medium mb-1">Discount %</label>
-                  <input type="number" id="edit-discount_percentage" name="discount_percentage" placeholder="Discount %"
-                    min="0" max="100" step="0.01" value="<?= $editCar['discount_percentage'] ?>"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                  <p id="edit-discount-error" class="mt-1 text-xs text-red-600"></p>
-                </div>
-              </div>
-
-              <!-- EDIT DISCOUNT CALCULATION PREVIEW JUST BELOW PRICE ROW -->
-              <div id="edit-discount-preview" class="bg-green-50 dark:bg-green-900 p-4 rounded-lg text-sm">
-                <p><strong>Old Price:</strong> <span id="edit-old-price-display"></span></p>
-                <p><strong>Current Price:</strong> <span id="edit-current-price-display"></span></p>
-                <p><strong>Discount:</strong> <span id="edit-discount-display"></span></p>
               </div>
 
               <div class="grid md:grid-cols-2 gap-4 mt-4">
@@ -875,259 +823,6 @@ function format_etb($val)
     editModal?.addEventListener('click', (e) => { if (e.target === editModal) e.stopPropagation(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && editModal.classList.contains('open')) {
-        e.preventDefault();
-      }
-    });
-
-    // === DISCOUNT PREVIEW (ADD) ===
-    const priceInput = document.getElementById('price');
-    const oldPriceInput = document.getElementById('old_price');
-    const discountInput = document.getElementById('discount_percentage');
-    const preview = document.getElementById('discount-preview');
-    const oldPriceDisplay = document.getElementById('old-price-display');
-    const currentPriceDisplay = document.getElementById('current-price-display');
-    const discountDisplay = document.getElementById('discount-display');
-
-    const priceError = document.getElementById('price-error');
-    const oldPriceError = document.getElementById('old-price-error');
-    const discountError = document.getElementById('discount-error');
-
-    function clearAddErrors() {
-      if (priceError) priceError.textContent = '';
-      if (oldPriceError) oldPriceError.textContent = '';
-      if (discountError) discountError.textContent = '';
-    }
-
-    function validateAddPricingValues(price, oldPrice, discount) {
-      clearAddErrors();
-      let valid = true;
-
-      if (price <= 0) {
-        if (priceError) priceError.textContent = 'Current price is required and must be greater than 0.';
-        valid = false;
-      }
-      if (oldPrice < 0) {
-        if (oldPriceError) oldPriceError.textContent = 'Old price cannot be negative.';
-        valid = false;
-      }
-      if (discount < 0 || discount > 100) {
-        if (discountError) discountError.textContent = 'Discount must be between 0 and 100.';
-        valid = false;
-      }
-      if (price > 0 && oldPrice > 0 && oldPrice < price) {
-        if (oldPriceError) oldPriceError.textContent = 'Old price should be greater than or equal to current price.';
-        valid = false;
-      }
-
-      return valid;
-    }
-
-    // Track which field the user is actively editing so we do NOT overwrite it
-    let isPriceFocused = false;
-    let isOldPriceFocused = false;
-    let isDiscountFocused = false;
-
-    priceInput?.addEventListener('focus', () => { isPriceFocused = true; });
-    priceInput?.addEventListener('blur', () => { isPriceFocused = false; });
-    oldPriceInput?.addEventListener('focus', () => { isOldPriceFocused = true; });
-    oldPriceInput?.addEventListener('blur', () => { isOldPriceFocused = false; });
-    discountInput?.addEventListener('focus', () => { isDiscountFocused = true; });
-    discountInput?.addEventListener('blur', () => { isDiscountFocused = false; });
-
-    function updatePreview() {
-      if (!priceInput || !oldPriceInput || !discountInput || !preview) return;
-
-      const price = parseFloat(priceInput.value) || 0;
-      const oldPrice = parseFloat(oldPriceInput.value) || 0;
-      const discount = parseFloat(discountInput.value) || 0;
-
-      const valid = validateAddPricingValues(price, oldPrice, discount);
-      // If only current price is set (no old, no discount), it's valid but no discount calculation
-      if (!valid || (price > 0 && oldPrice <= 0 && discount <= 0)) {
-        preview.classList.add('hidden');
-        return;
-      }
-
-      let calcOld = oldPrice;
-      let calcDiscount = discount;
-
-      // Auto-calc while also reflecting into the fields,
-      // but only when one piece is clearly missing AND that field is not being edited
-      if (price > 0 && oldPrice > 0 && discount === 0) {
-        // Have current + old, missing discount
-        calcDiscount = ((oldPrice - price) / oldPrice * 100).toFixed(2);
-        if (!isDiscountFocused && discountInput) {
-          discountInput.value = calcDiscount;
-        }
-      } else if (price > 0 && discount > 0 && oldPrice === 0) {
-        // Have current + discount, missing old
-        calcOld = (price / (1 - discount / 100)).toFixed(2);
-        if (!isOldPriceFocused && oldPriceInput) {
-          oldPriceInput.value = calcOld;
-        }
-      } else if (oldPrice > 0 && discount > 0) {
-        // Have old + discount, dynamically drive current (unless user is editing current)
-        calcOld = oldPrice;
-        calcDiscount = discount;
-        const calcPrice = oldPrice * (1 - discount / 100);
-        if (!isPriceFocused && priceInput) {
-          priceInput.value = calcPrice.toFixed(2);
-        }
-      }
-
-      const displayOld = calcOld > 0 ? calcOld : (oldPriceInput && parseFloat(oldPriceInput.value) > 0 ? parseFloat(oldPriceInput.value) : 0);
-      const displayPrice = priceInput && parseFloat(priceInput.value) > 0 ? parseFloat(priceInput.value) : 0;
-      const displayDiscount = calcDiscount > 0 ? calcDiscount : (discountInput && parseFloat(discountInput.value) > 0 ? parseFloat(discountInput.value) : 0);
-
-      if (oldPriceDisplay) {
-        oldPriceDisplay.textContent = displayOld > 0 ? '$' + Number(displayOld).toLocaleString() : '-';
-      }
-      if (currentPriceDisplay) {
-        currentPriceDisplay.textContent = displayPrice > 0 ? '$' + displayPrice.toLocaleString() : '-';
-      }
-      if (discountDisplay) {
-        discountDisplay.textContent = displayDiscount > 0 ? displayDiscount + '% OFF' : '-';
-      }
-      preview.classList.remove('hidden');
-    }
-
-    [priceInput, oldPriceInput, discountInput].forEach(input => input?.addEventListener('input', updatePreview));
-
-    // Validate on add form submit
-    const addForm = addModal?.querySelector('form');
-    addForm?.addEventListener('submit', (e) => {
-      const price = parseFloat(priceInput?.value || '0') || 0;
-      const oldPrice = parseFloat(oldPriceInput?.value || '0') || 0;
-      const discount = parseFloat(discountInput?.value || '0') || 0;
-      const valid = validateAddPricingValues(price, oldPrice, discount);
-      if (!valid) {
-        e.preventDefault();
-      }
-    });
-
-    // === DISCOUNT PREVIEW (EDIT) ===
-    const editPrice = document.getElementById('edit-price');
-    const editOldPrice = document.getElementById('edit-old_price');
-    const editDiscount = document.getElementById('edit-discount_percentage');
-    const editPreview = document.getElementById('edit-discount-preview');
-    const editOldDisplay = document.getElementById('edit-old-price-display');
-    const editCurrentDisplay = document.getElementById('edit-current-price-display');
-    const editDiscountDisplay = document.getElementById('edit-discount-display');
-
-    const editPriceError = document.getElementById('edit-price-error');
-    const editOldPriceError = document.getElementById('edit-old-price-error');
-    const editDiscountError = document.getElementById('edit-discount-error');
-
-    function clearEditErrors() {
-      if (editPriceError) editPriceError.textContent = '';
-      if (editOldPriceError) editOldPriceError.textContent = '';
-      if (editDiscountError) editDiscountError.textContent = '';
-    }
-
-    function validateEditPricingValues(price, oldPrice, discount) {
-      clearEditErrors();
-      let valid = true;
-
-      if (price <= 0) {
-        if (editPriceError) editPriceError.textContent = 'Current price is required and must be greater than 0.';
-        valid = false;
-      }
-      if (oldPrice < 0) {
-        if (editOldPriceError) editOldPriceError.textContent = 'Old price cannot be negative.';
-        valid = false;
-      }
-      if (discount < 0 || discount > 100) {
-        if (editDiscountError) editDiscountError.textContent = 'Discount must be between 0 and 100.';
-        valid = false;
-      }
-      if (price > 0 && oldPrice > 0 && oldPrice < price) {
-        if (editOldPriceError) editOldPriceError.textContent = 'Old price should be greater than or equal to current price.';
-        valid = false;
-      }
-
-      return valid;
-    }
-
-    // Track focus for edit fields so we don't overwrite what the user is erasing/typing
-    let isEditPriceFocused = false;
-    let isEditOldPriceFocused = false;
-    let isEditDiscountFocused = false;
-
-    editPrice?.addEventListener('focus', () => { isEditPriceFocused = true; });
-    editPrice?.addEventListener('blur', () => { isEditPriceFocused = false; });
-    editOldPrice?.addEventListener('focus', () => { isEditOldPriceFocused = true; });
-    editOldPrice?.addEventListener('blur', () => { isEditOldPriceFocused = false; });
-    editDiscount?.addEventListener('focus', () => { isEditDiscountFocused = true; });
-    editDiscount?.addEventListener('blur', () => { isEditDiscountFocused = false; });
-
-    function updateEditPreview() {
-      if (!editPrice || !editOldPrice || !editDiscount || !editPreview) return;
-
-      const price = parseFloat(editPrice.value) || 0;
-      const oldPrice = parseFloat(editOldPrice.value) || 0;
-      const discount = parseFloat(editDiscount.value) || 0;
-
-      const valid = validateEditPricingValues(price, oldPrice, discount);
-      // If only current price is set (no old, no discount), it's valid but no discount calculation
-      if (!valid || (price > 0 && oldPrice <= 0 && discount <= 0)) {
-        editPreview.classList.add('hidden');
-        return;
-      }
-
-      let calcOld = oldPrice;
-      let calcDiscount = discount;
-
-      // Auto-calc while also reflecting into the fields,
-      // but only when one piece is clearly missing AND that field is not being actively edited
-      if (price > 0 && oldPrice > 0 && discount === 0) {
-        // Have current + old, missing discount
-        calcDiscount = ((oldPrice - price) / oldPrice * 100).toFixed(2);
-        if (!isEditDiscountFocused && editDiscount) {
-          editDiscount.value = calcDiscount;
-        }
-      } else if (price > 0 && discount > 0 && oldPrice === 0) {
-        // Have current + discount, missing old
-        calcOld = (price / (1 - discount / 100)).toFixed(2);
-        if (!isEditOldPriceFocused && editOldPrice) {
-          editOldPrice.value = calcOld;
-        }
-      } else if (oldPrice > 0 && discount > 0) {
-        // Have old + discount, dynamically drive current (unless user is editing current)
-        calcOld = oldPrice;
-        calcDiscount = discount;
-        const calcPrice = oldPrice * (1 - discount / 100);
-        if (!isEditPriceFocused && editPrice) {
-          editPrice.value = calcPrice.toFixed(2);
-        }
-      }
-
-      const editDisplayOld = calcOld > 0 ? calcOld : (editOldPrice && parseFloat(editOldPrice.value) > 0 ? parseFloat(editOldPrice.value) : 0);
-      const editDisplayPrice = editPrice && parseFloat(editPrice.value) > 0 ? parseFloat(editPrice.value) : 0;
-      const editDisplayDiscount = calcDiscount > 0 ? calcDiscount : (editDiscount && parseFloat(editDiscount.value) > 0 ? parseFloat(editDiscount.value) : 0);
-
-      if (editOldDisplay) {
-        editOldDisplay.textContent = editDisplayOld > 0 ? '$' + Number(editDisplayOld).toLocaleString() : '-';
-      }
-      if (editCurrentDisplay) {
-        editCurrentDisplay.textContent = editDisplayPrice > 0 ? '$' + editDisplayPrice.toLocaleString() : '-';
-      }
-      if (editDiscountDisplay) {
-        editDiscountDisplay.textContent = editDisplayDiscount > 0 ? editDisplayDiscount + '% OFF' : '-';
-      }
-      editPreview.classList.remove('hidden');
-    }
-
-    [editPrice, editOldPrice, editDiscount].forEach(input => input?.addEventListener('input', updateEditPreview));
-    <?php if ($editCar): ?> updateEditPreview(); <?php endif; ?>
-
-    // Validate on edit form submit
-    const editForm = editModal?.querySelector('form');
-    editForm?.addEventListener('submit', (e) => {
-      const price = parseFloat(editPrice?.value || '0') || 0;
-      const oldPrice = parseFloat(editOldPrice?.value || '0') || 0;
-      const discount = parseFloat(editDiscount?.value || '0') || 0;
-      const valid = validateEditPricingValues(price, oldPrice, discount);
-      if (!valid) {
         e.preventDefault();
       }
     });

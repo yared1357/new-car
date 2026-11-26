@@ -456,7 +456,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
   <header class="sticky top-0 z-50 shadow-md" style="background-color: <?= htmlspecialchars($siteSettings['header_color'], ENT_QUOTES, 'UTF-8') ?>; color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
     <nav class="max-w-98vw lg:max-w-80vw mx-auto flex items-center justify-between p-4">
       <a href="#home" class="flex items-center space-x-3" aria-label="Go to homepage slider">
-        <img src="<?= htmlspecialchars($siteSettings['logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?> Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
+        <img src="<?= htmlspecialchars($siteSettings['logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?> Logo" class="w-12 h-12 sm:w-14 sm:h-14 rounded-md object-contain">
         <span class="flex flex-col font-bold text-lg uppercase tracking-wide" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
           <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>
           <?php if ($siteSettings['tagline'] !== ''): ?><small class="mt-0.5 text-sm font-normal normal-case sm:text-base"><?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
@@ -465,7 +465,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       <div class="flex items-center gap-2">
         <button type="button" id="header-refresh-button"
           aria-label="Refresh page" title="Refresh for new content"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white shadow-md transition active:scale-95" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white text-black shadow-md transition active:scale-95">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M20 6v5h-5M4 18v-5h5M6.5 9A7 7 0 0118 6.5L20 11M4 13l2 4.5A7 7 0 0017.5 15" />
@@ -475,14 +475,14 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <a href="tel:<?= htmlspecialchars(preg_replace('/[^0-9+]/', '', $siteSettings['contact_phone']), ENT_QUOTES, 'UTF-8') ?>"
             aria-label="Call <?= htmlspecialchars($siteSettings['contact_phone'], ENT_QUOTES, 'UTF-8') ?>"
             title="Call <?= htmlspecialchars($siteSettings['contact_phone'], ENT_QUOTES, 'UTF-8') ?>"
-            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-md transition hover:scale-105 hover:bg-blue-800" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white text-black shadow-md transition hover:scale-105 active:scale-95">
             <svg class="header-phone-icon h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
           </a>
         <?php else: ?>
-          <button type="button" class="open-contact-form flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-md transition hover:scale-105 hover:bg-blue-800" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>"
+          <button type="button" class="open-contact-form flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white text-black shadow-md transition hover:scale-105 active:scale-95"
             aria-label="Open contact form" title="Open contact form">
             <svg class="header-phone-icon h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1192,6 +1192,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
 
         <div class="mt-7 w-full border-t border-white/10 pt-5">
           <p class="text-xs tracking-wide">Copyrights&copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.</p>
+          <p class="mt-2 text-xs tracking-wide">Developed by <a href="https://yared.infinityfreeapp.com/portfolio.php" target="_blank" rel="noopener noreferrer" class="font-semibold underline-offset-4 transition hover:underline">Yared</a></p>
         </div>
       </div>
     </div>

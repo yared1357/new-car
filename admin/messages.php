@@ -222,7 +222,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-blue-900 text-white py-8 text-center text-sm">
+  <footer class="bg-[#0f2a3d] text-white py-8 text-center text-sm">
     &copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.
   </footer>
 

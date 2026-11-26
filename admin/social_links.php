@@ -210,7 +210,7 @@ $socialRows = $pdo->query(
       </div>
     </div>
   </main>
-  <footer class="bg-blue-900 py-8 text-center text-sm text-white">&copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.</footer>
+  <footer class="bg-[#0f2a3d] py-8 text-center text-sm text-white">&copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.</footer>
   <script>
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');

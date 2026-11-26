@@ -173,8 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <main id="main-content" class="flex-1 transition-all duration-300 bg-gray-100 dark:bg-gray-900 w-full pt-16 px-4">
     <div class="mx-auto max-w-5xl py-8">
     <h1 class="mb-2 text-2xl sm:text-3xl font-bold">Site settings</h1>
-    <p class="mb-6 text-gray-600 dark:text-gray-300">Update the public site identity, logo, contact details, and theme colors.</p>
-
+   
     <?php if (isset($_GET['saved'])): ?>
       <p class="mb-4 rounded-lg bg-green-100 p-4 text-green-800">Settings saved.</p>
     <?php endif; ?>
@@ -224,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
     </div>
   </main>
-  <footer class="bg-blue-900 py-8 text-center text-sm text-white">
+  <footer class="bg-[#0f2a3d] py-8 text-center text-sm text-white">
     &copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.
   </footer>
   <script>

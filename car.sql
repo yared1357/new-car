@@ -100,6 +100,7 @@ INSERT IGNORE INTO `site_settings` (`setting_key`, `setting_value`) VALUES
   ('tagline', 'Premium Used Cars'),
   ('logo_path', 'car.png'),
   ('contact_phone', ''),
+  ('additional_phones', '[]'),
   ('contact_email', ''),
   ('address', ''),
   ('primary_color', '#1E40AF'),

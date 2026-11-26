@@ -1108,6 +1108,38 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
   <footer class="border-t border-white/10 py-10 text-white" style="background-color: <?= htmlspecialchars($siteSettings['footer_color'], ENT_QUOTES, 'UTF-8') ?>">
     <div class="mx-auto max-w-98vw px-6 text-center lg:max-w-80vw">
       <div class="flex flex-col items-center">
+        <?php
+          $additionalPhones = json_decode($siteSettings['additional_phones'] ?? '[]', true);
+          if (!is_array($additionalPhones)) $additionalPhones = [];
+          $footerPhones = array_values(array_unique(array_filter(array_merge(
+            [$siteSettings['contact_phone']],
+            $additionalPhones
+          ))));
+        ?>
+        <?php if (count($footerPhones) > 0 || $siteSettings['contact_email'] !== '' || $siteSettings['address'] !== ''): ?>
+          <div class="mb-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <?php if ($siteSettings['address'] !== ''): ?>
+              <div class="mx-auto flex w-fit min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm">
+                <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21s7-5.6 7-12a7 7 0 10-14 0c0 6.4 7 12 7 12zm0-9a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                <span><?= htmlspecialchars($siteSettings['address'], ENT_QUOTES, 'UTF-8') ?></span>
+              </div>
+            <?php endif; ?>
+            <?php foreach ($footerPhones as $footerPhone):
+              $phoneLink = preg_replace('/[^0-9+]/', '', $footerPhone);
+            ?>
+              <a href="tel:<?= htmlspecialchars($phoneLink, ENT_QUOTES, 'UTF-8') ?>" class="mx-auto flex w-fit min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15">
+                <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.35 1.9.66 2.81a2 2 0 01-.45 2.11L8.05 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0122 16.92z"/></svg>
+                <span><?= htmlspecialchars($footerPhone, ENT_QUOTES, 'UTF-8') ?></span>
+              </a>
+            <?php endforeach; ?>
+            <?php if ($siteSettings['contact_email'] !== ''): ?>
+              <a href="mailto:<?= htmlspecialchars($siteSettings['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="mx-auto flex w-fit max-w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15">
+                <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 5h18v14H3zm0 1l9 7 9-7"/></svg>
+                <span class="break-all"><?= htmlspecialchars($siteSettings['contact_email'], ENT_QUOTES, 'UTF-8') ?></span>
+              </a>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
           <?php
             $footerPlatformNames = [

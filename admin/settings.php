@@ -16,6 +16,7 @@ $fields = [
     'site_name',
     'tagline',
     'contact_phone',
+    'additional_phones',
     'contact_email',
     'address',
     'primary_color',
@@ -31,8 +32,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Your form session expired. Reload the page and try again.';
     } else {
         foreach ($fields as $field) {
-            $values[$field] = trim($_POST[$field] ?? '');
+            if ($field !== 'additional_phones') {
+                $values[$field] = trim($_POST[$field] ?? '');
+            }
         }
+
+        $additionalPhones = [];
+        foreach ($_POST['additional_phones'] ?? [] as $phone) {
+            $phone = trim($phone);
+            if ($phone === '') continue;
+            if (strlen($phone) > 30 || !preg_match('/^[0-9+()\-\s]{6,30}$/', $phone)) {
+                $error = 'Enter valid additional phone numbers only.';
+                break;
+            }
+            $additionalPhones[] = $phone;
+        }
+        $values['additional_phones'] = json_encode(array_values(array_unique($additionalPhones)), JSON_UNESCAPED_SLASHES);
 
         if ($values['site_name'] === '' || strlen($values['site_name']) > 100) {
             $error = 'Enter a site name of up to 100 characters.';
@@ -190,13 +205,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="block">Tagline
           <input name="tagline" maxlength="160" value="<?= htmlspecialchars($values['tagline'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
-        <label class="block">Contact phone
-          <input name="contact_phone" maxlength="30" value="<?= htmlspecialchars($values['contact_phone'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
+        <label class="block">Primary phone <span class="text-sm text-gray-500">(optional)</span>
+          <input name="contact_phone" maxlength="30" placeholder="Primary phone number" value="<?= htmlspecialchars($values['contact_phone'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
-        <label class="block">Contact email
-          <input type="email" name="contact_email" maxlength="100" value="<?= htmlspecialchars($values['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
+        <div class="block">
+          <div class="mb-1 flex items-center justify-between gap-3">
+            <span>Additional phones <span class="text-sm text-gray-500">(optional)</span></span>
+            <button type="button" id="add-phone-btn" class="rounded-lg border border-blue-200 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-50">+ Add phone</button>
+          </div>
+          <div id="additional-phones-list" class="space-y-2"></div>
+        </div>
+        <label class="block">Contact email <span class="text-sm text-gray-500">(optional)</span>
+          <input type="email" name="contact_email" maxlength="100" placeholder="Email address" value="<?= htmlspecialchars($values['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
-        <label class="block md:col-span-2">Address
+        <label class="block md:col-span-2">Address <span class="text-sm text-gray-500">(optional)</span>
           <input name="address" maxlength="255" value="<?= htmlspecialchars($values['address'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
         <label class="block">Primary accent color
@@ -273,6 +295,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       document.getElementById('profile-menu').classList.toggle('hidden');
     });
     document.addEventListener('click', () => document.getElementById('profile-menu').classList.add('hidden'));
+
+    const additionalPhonesList = document.getElementById('additional-phones-list');
+    const addPhoneButton = document.getElementById('add-phone-btn');
+    const existingAdditionalPhones = <?= json_encode(json_decode($values['additional_phones'] ?? '[]', true) ?: [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+    function createPhoneInput(value = '') {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2';
+      row.innerHTML = `
+        <input type="text" name="additional_phones[]" maxlength="30" placeholder="Additional phone number" value="${value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}" class="no-spinner min-w-0 flex-1 rounded border p-3">
+        <button type="button" class="remove-phone-btn h-11 w-11 flex-shrink-0 rounded-lg border border-red-200 text-lg font-bold text-red-600 hover:bg-red-50" aria-label="Remove phone">&times;</button>`;
+      additionalPhonesList.appendChild(row);
+      row.querySelector('.remove-phone-btn').addEventListener('click', () => row.remove());
+    }
+
+    existingAdditionalPhones.forEach(phone => createPhoneInput(phone));
+    addPhoneButton.addEventListener('click', () => createPhoneInput());
   </script>
 </body>
 </html>

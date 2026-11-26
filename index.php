@@ -459,7 +459,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
         <img src="<?= htmlspecialchars($siteSettings['logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?> Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
         <span class="flex flex-col text-primary font-bold text-lg uppercase tracking-wide">
           <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>
-          <?php if ($siteSettings['tagline'] !== ''): ?><small class="text-xs font-normal normal-case"><?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
+          <?php if ($siteSettings['tagline'] !== ''): ?><small class="mt-0.5 text-sm font-normal normal-case sm:text-base"><?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
         </span>
       </a>
       <div class="flex items-center gap-2">

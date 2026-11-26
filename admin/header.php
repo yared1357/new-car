@@ -107,8 +107,15 @@
       <a href="dashboard.php" class="ml-1 flex items-center gap-3">
         <img src="<?= htmlspecialchars($adminLogoPath, ENT_QUOTES, 'UTF-8') ?>" alt="Logo"
           class="h-10 w-10 object-contain">
-        <span class="max-w-[42vw] truncate text-base font-bold uppercase tracking-tight text-primary lg:text-lg">
-          <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>
+        <span class="flex min-w-0 max-w-[42vw] flex-col">
+          <span class="truncate text-base font-bold uppercase tracking-tight text-primary lg:text-lg">
+            <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>
+          </span>
+          <?php if ($siteSettings['tagline'] !== ''): ?>
+            <span class="truncate text-xs font-semibold normal-case text-slate-500 sm:text-sm">
+              <?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?>
+            </span>
+          <?php endif; ?>
         </span>
       </a>
     </div>

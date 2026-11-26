@@ -453,11 +453,11 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
 <body class="bg-gray-50 text-gray-900">
 
   <!-- ===== HEADER (80% width, centered) â€“ LOGO = car.png ===== -->
-  <header class="sticky top-0 z-50 shadow-md" style="background-color: <?= htmlspecialchars($siteSettings['header_color'], ENT_QUOTES, 'UTF-8') ?>">
+  <header class="sticky top-0 z-50 shadow-md" style="background-color: <?= htmlspecialchars($siteSettings['header_color'], ENT_QUOTES, 'UTF-8') ?>; color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
     <nav class="max-w-98vw lg:max-w-80vw mx-auto flex items-center justify-between p-4">
       <a href="#home" class="flex items-center space-x-3" aria-label="Go to homepage slider">
         <img src="<?= htmlspecialchars($siteSettings['logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?> Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
-        <span class="flex flex-col text-primary font-bold text-lg uppercase tracking-wide">
+        <span class="flex flex-col font-bold text-lg uppercase tracking-wide" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
           <?= htmlspecialchars($siteSettings['site_name'], ENT_QUOTES, 'UTF-8') ?>
           <?php if ($siteSettings['tagline'] !== ''): ?><small class="mt-0.5 text-sm font-normal normal-case sm:text-base"><?= htmlspecialchars($siteSettings['tagline'], ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?>
         </span>
@@ -465,7 +465,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       <div class="flex items-center gap-2">
         <button type="button" id="header-refresh-button"
           aria-label="Refresh page" title="Refresh for new content"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white text-slate-700 shadow-md transition hover:border-primary hover:text-primary active:scale-95">
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300/80 bg-white shadow-md transition active:scale-95" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M20 6v5h-5M4 18v-5h5M6.5 9A7 7 0 0118 6.5L20 11M4 13l2 4.5A7 7 0 0017.5 15" />
@@ -475,14 +475,14 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <a href="tel:<?= htmlspecialchars(preg_replace('/[^0-9+]/', '', $siteSettings['contact_phone']), ENT_QUOTES, 'UTF-8') ?>"
             aria-label="Call <?= htmlspecialchars($siteSettings['contact_phone'], ENT_QUOTES, 'UTF-8') ?>"
             title="Call <?= htmlspecialchars($siteSettings['contact_phone'], ENT_QUOTES, 'UTF-8') ?>"
-            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md transition hover:scale-105 hover:bg-blue-800">
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-md transition hover:scale-105 hover:bg-blue-800" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>">
             <svg class="header-phone-icon h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
           </a>
         <?php else: ?>
-          <button type="button" class="open-contact-form flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md transition hover:scale-105 hover:bg-blue-800"
+          <button type="button" class="open-contact-form flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-md transition hover:scale-105 hover:bg-blue-800" style="color: <?= htmlspecialchars($siteSettings['header_content_color'], ENT_QUOTES, 'UTF-8') ?>"
             aria-label="Open contact form" title="Open contact form">
             <svg class="header-phone-icon h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1105,7 +1105,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
   </button>
 
   <!-- ===== FOOTER ===== -->
-  <footer class="border-t border-white/10 py-10 text-white" style="background-color: <?= htmlspecialchars($siteSettings['footer_color'], ENT_QUOTES, 'UTF-8') ?>">
+  <footer class="border-t border-white/10 py-10" style="background-color: <?= htmlspecialchars($siteSettings['footer_color'], ENT_QUOTES, 'UTF-8') ?>; color: <?= htmlspecialchars($siteSettings['footer_content_color'], ENT_QUOTES, 'UTF-8') ?>">
     <div class="mx-auto max-w-98vw px-6 text-center lg:max-w-80vw">
       <div class="flex flex-col items-center">
         <?php
@@ -1117,23 +1117,23 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           ))));
         ?>
         <?php if (count($footerPhones) > 0 || $siteSettings['contact_email'] !== '' || $siteSettings['address'] !== ''): ?>
-          <div class="mb-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="mb-6 flex w-full flex-wrap items-center justify-evenly gap-2 sm:gap-3 lg:gap-4">
             <?php if ($siteSettings['address'] !== ''): ?>
-              <div class="mx-auto flex w-fit min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm">
+              <div class="flex min-h-10 max-w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm sm:min-h-11">
                 <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21s7-5.6 7-12a7 7 0 10-14 0c0 6.4 7 12 7 12zm0-9a3 3 0 100-6 3 3 0 000 6z"/></svg>
-                <span><?= htmlspecialchars($siteSettings['address'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="break-words"><?= htmlspecialchars($siteSettings['address'], ENT_QUOTES, 'UTF-8') ?></span>
               </div>
             <?php endif; ?>
             <?php foreach ($footerPhones as $footerPhone):
               $phoneLink = preg_replace('/[^0-9+]/', '', $footerPhone);
             ?>
-              <a href="tel:<?= htmlspecialchars($phoneLink, ENT_QUOTES, 'UTF-8') ?>" class="mx-auto flex w-fit min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15">
+              <a href="tel:<?= htmlspecialchars($phoneLink, ENT_QUOTES, 'UTF-8') ?>" class="flex min-h-10 max-w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15 sm:min-h-11">
                 <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.35 1.9.66 2.81a2 2 0 01-.45 2.11L8.05 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0122 16.92z"/></svg>
                 <span><?= htmlspecialchars($footerPhone, ENT_QUOTES, 'UTF-8') ?></span>
               </a>
             <?php endforeach; ?>
             <?php if ($siteSettings['contact_email'] !== ''): ?>
-              <a href="mailto:<?= htmlspecialchars($siteSettings['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="mx-auto flex w-fit max-w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15">
+              <a href="mailto:<?= htmlspecialchars($siteSettings['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="flex min-h-10 max-w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm transition hover:bg-white/15 sm:min-h-11">
                 <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 5h18v14H3zm0 1l9 7 9-7"/></svg>
                 <span class="break-all"><?= htmlspecialchars($siteSettings['contact_email'], ENT_QUOTES, 'UTF-8') ?></span>
               </a>
@@ -1191,7 +1191,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
         </div>
 
         <div class="mt-7 w-full border-t border-white/10 pt-5">
-          <p class="text-xs tracking-wide text-white/70">Copyrights&copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.</p>
+          <p class="text-xs tracking-wide">Copyrights&copy; <?= date('Y') ?> <?= htmlspecialchars(strtoupper($siteSettings['site_name']), ENT_QUOTES, 'UTF-8') ?>. All rights reserved.</p>
         </div>
       </div>
     </div>

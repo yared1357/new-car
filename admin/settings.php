@@ -23,6 +23,8 @@ $fields = [
     'accent_color',
     'header_color',
     'footer_color',
+    'header_content_color',
+    'footer_content_color',
 ];
 $values = $siteSettings;
 
@@ -64,6 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['accent_color'])
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['header_color'])
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['footer_color'])
+            || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['header_content_color'])
+            || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['footer_content_color'])
         ) {
             $error = 'Choose valid six-digit hex colors for the theme, header, and footer.';
         }
@@ -232,6 +236,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </label>
         <label class="block">Footer background color
           <input type="color" name="footer_color" value="<?= htmlspecialchars($values['footer_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
+        </label>
+        <label class="block">Header content color
+          <input type="color" name="header_content_color" value="<?= htmlspecialchars($values['header_content_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
+        </label>
+        <label class="block">Footer content color
+          <input type="color" name="footer_content_color" value="<?= htmlspecialchars($values['footer_content_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
         </label>
         <label class="block md:col-span-2">Logo image (PNG, JPG, WEBP, or GIF; max 2 MB)
           <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif" class="mt-1 block w-full rounded border p-3">

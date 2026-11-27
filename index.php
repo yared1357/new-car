@@ -523,8 +523,7 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     <!-- Content -->
     <div
       class="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-4 max-w-80vw mx-auto">
-      <h1 id="hero-title" class="text-xl sm:text-2xl md:text-5xl font-bold mb-4 animate-fade-in px-2">Find Your Dream
-        Car</h1>
+      <h1 id="hero-title" class="hidden text-xl sm:text-2xl md:text-5xl font-bold mb-4 animate-fade-in px-2"></h1>
       <p id="hero-description"
         class="text-sm sm:text-base md:text-xl mb-8 max-w-2xl mx-auto animate-fade-in delay-200 px-2"></p>
     </div>
@@ -732,7 +731,10 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
     function updateHeroContent(index) {
       if (heroImages[index]) {
         const img = heroImages[index];
-        document.getElementById('hero-title').textContent = img.title || 'Find Your Dream Car';
+        const titleElement = document.getElementById('hero-title');
+        const title = (img.title || '').trim();
+        titleElement.textContent = title;
+        titleElement.classList.toggle('hidden', title === '');
         document.getElementById('hero-description').textContent = img.description || '';
       }
     }

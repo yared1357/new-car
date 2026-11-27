@@ -20,19 +20,38 @@ $fields = [
     'contact_email',
     'address',
     'primary_color',
-    'accent_color',
     'header_color',
     'footer_color',
     'header_content_color',
     'footer_content_color',
 ];
 $values = $siteSettings;
+$colorDefaults = [
+  'primary_color' => '#1E40AF',
+  'header_color' => '#172554',
+  'footer_color' => '#172554',
+  'header_content_color' => '#FFFFFF',
+  'footer_content_color' => '#FFFFFF',
+];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!hash_equals($_SESSION['settings_csrf_token'], $_POST['csrf_token'] ?? '')) {
         http_response_code(400);
         $error = 'Your form session expired. Reload the page and try again.';
     } else {
+        if (isset($_POST['reset_colors'])) {
+          $stmt = $pdo->prepare(
+            'INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)'
+          );
+          foreach ($colorDefaults as $field => $color) {
+            $stmt->execute([$field, $color]);
+          }
+
+          header('Location: settings.php?colors_reset=1');
+          exit;
+        }
+
         foreach ($fields as $field) {
             if ($field !== 'additional_phones') {
                 $values[$field] = trim($_POST[$field] ?? '');
@@ -63,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Address must be 255 characters or fewer.';
         } elseif (
             !preg_match('/^#[0-9a-fA-F]{6}$/', $values['primary_color'])
-            || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['accent_color'])
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['header_color'])
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['footer_color'])
             || !preg_match('/^#[0-9a-fA-F]{6}$/', $values['header_content_color'])
@@ -136,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: { primary: '#1E40AF', accent: '#F59E0B' },
+          colors: { primary: '#1E40AF' },
         },
       },
     };
@@ -196,6 +214,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if (isset($_GET['saved'])): ?>
       <p class="mb-4 rounded-lg bg-green-100 p-4 text-green-800">Settings saved.</p>
     <?php endif; ?>
+    <?php if (isset($_GET['colors_reset'])): ?>
+      <p class="mb-4 rounded-lg bg-green-100 p-4 text-green-800">Colors reset to system defaults. Other site settings were not changed.</p>
+    <?php endif; ?>
     <?php if ($error !== ''): ?>
       <p class="mb-4 rounded-lg bg-red-100 p-4 text-red-800"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
@@ -222,14 +243,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="block">Contact email <span class="text-sm text-gray-500">(optional)</span>
           <input type="email" name="contact_email" maxlength="100" placeholder="Email address" value="<?= htmlspecialchars($values['contact_email'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
-        <label class="block md:col-span-2">Address <span class="text-sm text-gray-500">(optional)</span>
+        <label class="block">Address <span class="text-sm text-gray-500">(optional)</span>
           <input name="address" maxlength="255" value="<?= htmlspecialchars($values['address'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 w-full rounded border p-3">
         </label>
         <label class="block">Primary accent color
           <input type="color" name="primary_color" value="<?= htmlspecialchars($values['primary_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
-        </label>
-        <label class="block">Secondary accent color
-          <input type="color" name="accent_color" value="<?= htmlspecialchars($values['accent_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
         </label>
         <label class="block">Header background color
           <input type="color" name="header_color" value="<?= htmlspecialchars($values['header_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
@@ -243,15 +261,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="block">Footer content color
           <input type="color" name="footer_content_color" value="<?= htmlspecialchars($values['footer_content_color'], ENT_QUOTES, 'UTF-8') ?>" class="mt-1 h-12 w-full rounded border p-1">
         </label>
-        <label class="block md:col-span-2">Logo image (PNG, JPG, WEBP, or GIF; max 2 MB)
+        <label class="block">Logo image (PNG, JPG, WEBP, or GIF; max 2 MB)
           <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif" class="mt-1 block w-full rounded border p-3">
           <span class="mt-2 block text-sm text-gray-500">Current logo: <?= htmlspecialchars($values['logo_path'], ENT_QUOTES, 'UTF-8') ?></span>
         </label>
       </div>
-      <div class="flex flex-wrap gap-3">
-        <button type="submit" class="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800">Save settings</button>
-        <a href="social_links.php" class="rounded-lg border px-6 py-3 font-semibold">Configure Social Media</a>
-         </div>
+      <div class="mx-auto flex w-full max-w-md flex-nowrap items-center justify-center gap-2 px-2 sm:gap-4 sm:px-6">
+        <button type="submit" class="flex-1 whitespace-nowrap rounded-lg bg-blue-700 px-3 py-3 text-xs font-semibold text-white hover:bg-blue-800 sm:flex-none sm:px-6 sm:text-sm">Save settings</button>
+        <button type="submit" name="reset_colors" value="1" class="flex-1 whitespace-nowrap rounded-lg border border-slate-300 px-3 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:flex-none sm:px-6 sm:text-sm"><span class="sm:hidden">Reset colors</span><span class="hidden sm:inline">Reset colors to system defaults</span></button>
+      </div>
     </form>
     </div>
   </main>

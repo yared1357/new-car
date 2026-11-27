@@ -104,10 +104,9 @@ INSERT IGNORE INTO `site_settings` (`setting_key`, `setting_value`) VALUES
   ('contact_email', ''),
   ('address', ''),
   ('primary_color', '#1E40AF'),
-  ('accent_color', '#F59E0B'),
-  ('header_color', '#F3F4F6'),
+  ('header_color', '#172554'),
   ('footer_color', '#172554'),
-  ('header_content_color', '#1E40AF'),
+  ('header_content_color', '#FFFFFF'),
   ('footer_content_color', '#FFFFFF'),
 
 CREATE TABLE IF NOT EXISTS `social_links` (

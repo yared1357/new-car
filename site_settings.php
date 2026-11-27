@@ -10,10 +10,9 @@ function get_site_settings(PDO $pdo): array
         'contact_email' => '',
         'address' => '',
         'primary_color' => '#1E40AF',
-        'accent_color' => '#F59E0B',
-        'header_color' => '#F3F4F6',
+        'header_color' => '#172554',
         'footer_color' => '#172554',
-        'header_content_color' => '#1E40AF',
+        'header_content_color' => '#FFFFFF',
         'footer_content_color' => '#FFFFFF',
     ];
 
@@ -24,9 +23,15 @@ function get_site_settings(PDO $pdo): array
         }
     }
 
-    foreach (['primary_color', 'accent_color', 'header_color', 'footer_color', 'header_content_color', 'footer_content_color'] as $colorSetting) {
+    foreach (['primary_color', 'header_color', 'footer_color', 'header_content_color', 'footer_content_color'] as $colorSetting) {
         if (!preg_match('/^#[0-9a-fA-F]{6}$/', $defaults[$colorSetting])) {
-            $defaults[$colorSetting] = $colorSetting === 'header_color' ? '#F3F4F6' : ($colorSetting === 'footer_color' ? '#172554' : ($colorSetting === 'footer_content_color' ? '#FFFFFF' : ($colorSetting === 'header_content_color' ? '#1E40AF' : '#1E40AF')));
+            $defaults[$colorSetting] = [
+                'primary_color' => '#1E40AF',
+                'header_color' => '#172554',
+                'footer_color' => '#172554',
+                'header_content_color' => '#FFFFFF',
+                'footer_content_color' => '#FFFFFF',
+            ][$colorSetting];
         }
     }
 

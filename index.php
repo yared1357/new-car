@@ -31,7 +31,6 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
             primary: <?= json_encode($siteSettings['primary_color'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
-            accent: <?= json_encode($siteSettings['accent_color'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
           },
           maxWidth: { '80vw': '80vw', '96vw': '96vw', '98vw': '98vw' },
           height: { '60vh': '60vh', '70vh': '70vh' }, // For mobile height

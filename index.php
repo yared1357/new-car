@@ -565,23 +565,24 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 sm:gap-4">
         <input type="text" id="search-input" placeholder="Search..."
           class="col-span-2 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary whitespace-nowrap overflow-hidden text-ellipsis sm:col-span-1">
+        <div class="col-span-2 flex min-w-0 gap-2 overflow-x-auto pb-1 sm:contents">
         <select id="filter-year"
-          class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          class="min-w-[68px] flex-1 border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:min-w-0 sm:text-sm">
           <option value="">Year</option>
         </select>
         <select id="filter-category"
-          class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          class="min-w-[82px] flex-1 border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:min-w-0 sm:text-sm">
           <option value="">Category</option>
           <option>New</option>
           <option>Secondhand</option>
           <option>Classic</option>
         </select>
         <select id="filter-brand"
-          class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          class="min-w-[72px] flex-1 border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:min-w-0 sm:text-sm">
           <option value="">Brand</option>
         </select>
         <select id="filter-fuel"
-          class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          class="min-w-[68px] flex-1 border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:min-w-0 sm:text-sm">
           <option value="">Fuel</option>
           <option>Petrol</option>
           <option>Diesel</option>
@@ -589,11 +590,12 @@ $pageTitle = $siteSettings['site_name'] . ($siteSettings['tagline'] !== '' ? ' â
           <option>Hybrid</option>
         </select>
         <select id="filter-type"
-          class="border rounded-lg px-1 sm:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:text-sm">
+          class="min-w-[76px] flex-1 border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-[10px] sm:min-w-0 sm:text-sm">
           <option value="">Type</option>
           <option>Manual</option>
           <option>Automatic</option>
         </select>
+        </div>
       </div>
     </div>
 

@@ -221,7 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <p class="mb-4 rounded-lg bg-red-100 p-4 text-red-800"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
 
-    <form method="post" enctype="multipart/form-data" class="space-y-6 rounded-xl bg-white p-6 shadow">
+    <div class="rounded-xl bg-white p-6 shadow">
+    <form id="settings-form" method="post" enctype="multipart/form-data" class="space-y-6" data-confirm-title="Save settings?" data-confirm-message="Save the changes you made to your site settings?" data-confirm-button="Save settings" data-confirm-style="primary">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['settings_csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
       <div class="grid gap-5 md:grid-cols-2">
         <label class="block">Site name
@@ -266,11 +267,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <span class="mt-2 block text-sm text-gray-500">Current logo: <?= htmlspecialchars($values['logo_path'], ENT_QUOTES, 'UTF-8') ?></span>
         </label>
       </div>
-      <div class="mx-auto flex w-full max-w-md flex-nowrap items-center justify-center gap-2 px-2 sm:gap-4 sm:px-6">
-        <button type="submit" class="flex-1 whitespace-nowrap rounded-lg bg-blue-700 px-3 py-3 text-xs font-semibold text-white hover:bg-blue-800 sm:flex-none sm:px-6 sm:text-sm">Save settings</button>
-        <button type="submit" name="reset_colors" value="1" class="flex-1 whitespace-nowrap rounded-lg border border-slate-300 px-3 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:flex-none sm:px-6 sm:text-sm"><span class="sm:hidden">Reset colors</span><span class="hidden sm:inline">Reset colors to system defaults</span></button>
-      </div>
     </form>
+      <div class="mx-auto flex w-full max-w-md flex-nowrap items-center justify-center gap-2 px-2 sm:gap-4 sm:px-6">
+        <button type="submit" form="settings-form" class="flex-1 whitespace-nowrap rounded-lg bg-blue-700 px-3 py-3 text-xs font-semibold text-white hover:bg-blue-800 sm:flex-none sm:px-6 sm:text-sm">Save settings</button>
+        <form method="post" class="flex-1" data-confirm-title="Reset colors?" data-confirm-message="Restore the system default colors? Your site name, logo, phone, email, and address will remain unchanged." data-confirm-button="Reset colors">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['settings_csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+          <input type="hidden" name="reset_colors" value="1">
+          <button type="submit" class="w-full whitespace-nowrap rounded-lg border border-slate-300 bg-slate-100 px-3 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-200 sm:px-6 sm:text-sm"><span class="sm:hidden">Reset colors</span><span class="hidden sm:inline">Reset colors to system defaults</span></button>
+        </form>
+      </div>
+    </div>
     </div>
   </main>
   <footer class="bg-[#0f2a3d] py-8 text-center text-sm text-white">

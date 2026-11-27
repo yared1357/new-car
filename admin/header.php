@@ -6,6 +6,37 @@
   }
 
   (() => {
+    document.addEventListener('click', event => {
+      const profileButton = event.target.closest('#profile-btn');
+      const profileMenu = document.getElementById('profile-menu');
+      if (!profileMenu) return;
+
+      if (profileButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpening = profileMenu.classList.contains('hidden');
+        profileMenu.classList.toggle('hidden', !isOpening);
+        profileButton.setAttribute('aria-expanded', String(isOpening));
+        return;
+      }
+
+      if (!profileMenu.contains(event.target)) {
+        profileMenu.classList.add('hidden');
+        document.getElementById('profile-btn')?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      const profileMenu = document.getElementById('profile-menu');
+      const profileButton = document.getElementById('profile-btn');
+      if (profileMenu && !profileMenu.classList.contains('hidden')) {
+        profileMenu.classList.add('hidden');
+        profileButton?.setAttribute('aria-expanded', 'false');
+        profileButton?.focus();
+      }
+    });
+
     const desktop = window.matchMedia('(min-width: 1024px)').matches;
     const closed = !desktop && localStorage.getItem('adminSidebarClosed') === '1';
     if (desktop) localStorage.setItem('adminSidebarClosed', '0');
@@ -21,7 +52,6 @@
       const main = document.getElementById('main-content');
       const headerLeft = document.getElementById('header-left');
       let desktopMode = window.matchMedia('(min-width: 1024px)').matches;
-
       menuButton?.addEventListener('click', event => {
         if (window.innerWidth < 1024) {
           const opening = sidebar.classList.contains('-translate-x-full');
